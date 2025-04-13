@@ -1,9 +1,93 @@
+<!-- Breadcrumb -->
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="#" onclick="loadPage('admin-course.html')">Menu</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Course</li>
+        <li class="breadcrumb-item"><a href="#" onclick="loadPage('admin-dashboard.html')">Dashboard</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Courses</li>
     </ol>
 </nav>
 
-<h2>Admin Course</h2>
-<p>This is Course in admin.</p>
+<h2 class="mb-3">Course Master</h2>
+
+<!-- Add Course Button -->
+<div class="mb-3">
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCourseModal">
+        <i class="fa fa-plus me-1"></i> Add New Course
+    </button>
+</div>
+
+<!-- Courses Table -->
+<div class="table-responsive">
+    <table class="table table-bordered align-middle">
+        <thead class="table-light">
+            <tr>
+                <th>Course ID</th>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Instructor ID</th>
+                <th>Fee (₹)</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Sample Data -->
+            <tr>
+                <td>CRS001</td>
+                <td>Python Basics</td>
+                <td>Introductory course to Python programming</td>
+                <td>INST001</td>
+                <td>3000</td>
+                <td>
+                    <button class="btn btn-sm btn-warning me-1"><i class="fa fa-edit"></i></button>
+                    <button class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></button>
+                </td>
+            </tr>
+            <!-- More rows can be dynamically added -->
+        </tbody>
+    </table>
+</div>
+
+<!-- Add Course Modal -->
+<div class="modal fade" id="addCourseModal" tabindex="-1" aria-labelledby="addCourseModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form>
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addCourseModalLabel">Add New Course</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+
+                    <div class="mb-3">
+                        <label for="courseId" class="form-label">Course ID</label>
+                        <input type="text" class="form-control" id="courseId" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="courseTitle" class="form-label">Title</label>
+                        <input type="text" class="form-control" id="courseTitle" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="courseDescription" class="form-label">Description</label>
+                        <textarea class="form-control" id="courseDescription" rows="3" required></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="instructorId" class="form-label">Instructor ID</label>
+                        <input type="text" class="form-control" id="instructorId" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="courseFee" class="form-label">Fee (₹)</label>
+                        <input type="number" class="form-control" id="courseFee" required>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Save Course</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

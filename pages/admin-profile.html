@@ -1,9 +1,48 @@
+<!-- Breadcrumb -->
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="#" onclick="loadPage('admin-profile.html')">Settings</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Admin profile</li>
+        <li class="breadcrumb-item active" aria-current="page">Admin Profile</li>
     </ol>
 </nav>
 
-<h2>Admin Profile </h2>
-<p>This is admin profile</p>
+<h2 class="mb-3">Admin Profile</h2>
+<p>View and update your profile details below.</p>
+
+<!-- Admin Profile Card -->
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <form>
+            <div class="mb-3">
+                <label for="adminId" class="form-label">Admin ID</label>
+                <input type="text" class="form-control" id="adminId" value="ADM001" readonly>
+            </div>
+
+            <div class="mb-3">
+                <label for="adminName" class="form-label">Full Name</label>
+                <input type="text" class="form-control" id="adminName" value="Ravi Verma">
+            </div>
+
+            <div class="mb-3">
+                <label for="adminEmail" class="form-label">Email</label>
+                <input type="email" class="form-control" id="adminEmail" value="admin@example.com">
+            </div>
+
+            <div class="mb-3">
+                <label for="adminPhone" class="form-label">Phone</label>
+                <input type="tel" class="form-control" id="adminPhone" value="9876543210">
+            </div>
+
+            <div class="mb-3">
+                <label for="adminPassword" class="form-label">Password</label>
+                <input type="password" class="form-control" id="adminPassword" placeholder="********">
+            </div>
+
+            <div class="d-grid">
+                <button type="submit" class="btn btn-success">
+                    <i class="fa fa-save me-1"></i> Update Profile
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

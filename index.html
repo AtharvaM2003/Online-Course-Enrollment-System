@@ -4,12 +4,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="pages/css/bootstrap.min.css">
     <title>Online Course</title>
+    <style>
+        .search-input {
+            width: 300px;
+        }
+
+        footer {
+            background-color: #f8f9fa;
+            padding: 40px 0;
+            margin-top: 40px;
+        }
+
+        .footer-links a {
+            text-decoration: none;
+            color: #6c757d;
+        }
+
+        .footer-links a:hover {
+            color: #343a40;
+        }
+
+        .hero-section {
+            background-color: #e9ecef;
+            padding: 80px 20px;
+            text-align: center;
+        }
+
+        .cta-section {
+            background-color: #f0f8ff;
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+
+        .navbar-nav .nav-link {
+            transition: color 0.3s ease, background-color 0.3s ease;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: #50bcf2;
+            background-color: rgba(13, 110, 253, 0.1);
+            border-radius: 4px;
+        }
+
+        .search-input {
+            width: 300px;
+        }
+
+        footer {
+            background-color: #f8f9fa;
+            padding: 40px 0;
+            margin-top: 40px;
+        }
+
+        .footer-links a {
+            text-decoration: none;
+            color: #6c757d;
+        }
+
+        .footer-links a:hover {
+            color: #343a40;
+        }
+
+        .hero-section {
+            background-color: #e9ecef;
+            padding: 80px 20px;
+            text-align: center;
+        }
+
+        .cta-section {
+            background-color: #f0f8ff;
+            padding: 60px 20px;
+            text-align: center;
+        }
+    </style>
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg bg-light " data-bs-theme="light">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg bg-light" data-bs-theme="light">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">MindSpark</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor03"
@@ -17,7 +92,7 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarColor03">
-                <ul class="navbar-nav me-auto">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
                         <a class="nav-link active" href="#">Home
                             <span class="visually-hidden">(current)</span>
@@ -32,27 +107,125 @@
                     <li class="nav-item">
                         <a class="nav-link" href="#">About</a>
                     </li>
-
-
                 </ul>
 
                 <form class="d-flex mx-auto align-items-center">
-                    <input class="form-control me-2" type="search" placeholder="Search">
-                    <button class="btn btn-secondary " type="submit">Search</button>
+                    <input class="form-control me-2 search-input" type="search" placeholder="Search">
+                    <button class="btn btn-secondary" type="submit">Search</button>
                 </form>
 
                 <div class="d-flex">
-                    <button type="button" class="btn btn-info me-2">Sign-up</button>
-                    <button type="button" class="btn btn-secondary me-2">Log in</button>
-
-
+                    <button type="button" class="btn btn-info me-2"
+                        onclick="window.location.href='pages/signup.html'">Sign-up</button>
+                    <button type="button" class="btn btn-secondary me-2"
+                        onclick="window.location.href='pages/login.html'">Log
+                        in</button>
                 </div>
             </div>
-
-
         </div>
     </nav>
 
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <h1 class="display-5 fw-bold">Learn New Skills Online</h1>
+            <p class="lead">Join thousands of learners from around the globe on MindSpark. Start your journey today with
+                our expert-led courses.</p>
+            <a href="#" class="btn btn-primary btn-lg">Explore Courses</a>
+        </div>
+    </section>
+
+    <!-- Featured Courses -->
+    <section class="container my-5">
+        <h2 class="text-center mb-4">Featured Courses</h2>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <img src="https://img-c.udemycdn.com/course/750x422/5178116_6858.jpg" class="card-img-top"
+                        alt="Course 1">
+                    <div class="card-body">
+                        <h5 class="card-title">Web Development Bootcamp</h5>
+                        <p class="card-text">Master HTML, CSS, JavaScript, and React in this beginner-friendly course.
+                        </p>
+                        <a href="#" class="btn btn-outline-primary">Learn More</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <img src="https://149860134.v2.pressablecdn.com/wp-content/uploads/PythonDS.jpeg"
+                        class="card-img-top" alt="Course 2">
+                    <div class="card-body">
+                        <h5 class="card-title">Python for Data Science</h5>
+                        <p class="card-text">Analyze data and build ML models with Python, Pandas, and Scikit-Learn.</p>
+                        <a href="#" class="btn btn-outline-primary">Learn More</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <img src="https://www.vizrt.com/wp-content/uploads/ai-ml-new20article-vizrt-hdr-img-1920x1080-1.png"
+                        class="card-img-top" alt="Course 3">
+                    <div class="card-body">
+                        <h5 class="card-title">AI & Machine Learning</h5>
+                        <p class="card-text">Dive deep into artificial intelligence with hands-on projects and
+                            tutorials.</p>
+                        <a href="#" class="btn btn-outline-primary">Learn More</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="cta-section">
+        <div class="container">
+            <h2 class="mb-4">Ready to take your skills to the next level?</h2>
+            <p>Sign up today and unlock access to hundreds of expert-led courses in tech, business, design, and more.
+            </p>
+            <a href="#" class="btn btn-success btn-lg">Join Now</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="text-center text-lg-start">
+        <div class="container text-center text-md-start">
+            <div class="row">
+                <div class="col-md-3 mb-4">
+                    <h5 class="text-uppercase fw-bold mb-3">MindSpark</h5>
+                    <p>Your platform to learn, grow and share knowledge with the world.</p>
+                </div>
+
+                <div class="col-md-3 mb-4 footer-links">
+                    <h6 class="text-uppercase fw-bold mb-3">Explore</h6>
+                    <p><a href="#">Courses</a></p>
+                    <p><a href="#">Teach with Us</a></p>
+                    <p><a href="#">About</a></p>
+                    <p><a href="#">Contact</a></p>
+                </div>
+
+                <div class="col-md-3 mb-4 footer-links">
+                    <h6 class="text-uppercase fw-bold mb-3">Support</h6>
+                    <p><a href="#">Help Center</a></p>
+                    <p><a href="#">Terms of Service</a></p>
+                    <p><a href="#">Privacy Policy</a></p>
+                </div>
+
+                <div class="col-md-3 mb-4">
+                    <h6 class="text-uppercase fw-bold mb-3">Stay Connected</h6>
+                    <p>Email: support@mindspark.com</p>
+                    <p>Phone: +91 12345 67890</p>
+                    <p>Follow us on social media</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center p-3 bg-light border-top">
+            &copy; 2025 MindSpark. All rights reserved.
+        </div>
+    </footer>
+
+    <script src="js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

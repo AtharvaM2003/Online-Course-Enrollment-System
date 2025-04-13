@@ -4,14 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="pages/css/bootstrap.min.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <title>Admin</title>
 </head>
 
-<body>
-
-
+<body onload="loadPage('admin-dashboard.html')">
 
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg bg-light ">
@@ -30,36 +30,27 @@
     <div class="d-flex">
         <!-- Sidebar -->
         <div class="bg-light sidebar border-right p-3" style="width: 250px; min-height: 100vh;">
-            <h5 class=" mb-3">Navigation</h5>
+            <h5 class="mb-3">Navigation</h5>
             <ul class="nav flex-column">
                 <li class="nav-item">
-                    <a href="#" class="nav-link " onclick="loadPage('admin-dashboard.html')">
+                    <a href="#" class="nav-link" onclick="loadPage('admin-dashboard.html')">
                         <i class="fa fa-chart-line me-2"></i> Dashboard
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link  dropdown-toggle" data-bs-toggle="collapse" href="#menu1">
-                        <i class="fa fa-layer-group me-2"></i> Menu
+                    <a href="#" class="nav-link" onclick="loadPage('admin-course.html')">
+                        <i class="fa-solid fa-graduation-cap me-2"></i> Course
                     </a>
-                    <div class="collapse" id="menu1">
-                        <ul class="nav flex-column ms-3">
-                            <li><a href="#" class="nav-link " onclick="loadPage('admin-course.html')">
-
-                                    <i class="fa-solid fa-graduation-cap"></i> Course</a>
-                            </li>
-                            <li><a href="#" class="nav-link " onclick="loadPage('admin-student.html')"><i
-                                        class="fa-solid fa-user"></i> Student</a>
-                            </li>
-                            <li><a href="#" class="nav-link " onclick="loadPage('admin-instructor.html')"><i
-                                        class="fa-solid fa-person-chalkboard"></i> Instructor</a>
-                            </li>
-                            <!-- <li>
-                                <a href="#" class="nav-link" onclick="loadPage('admin-enrollment.html')">
-                                    <i class="fa-solid fa-book me-2"></i> Enrollments
-                                </a>
-                            </li> -->
-                        </ul>
-                    </div>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" onclick="loadPage('admin-student.html')">
+                        <i class="fa-solid fa-user me-2"></i> Student
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" onclick="loadPage('admin-instructor.html')">
+                        <i class="fa-solid fa-person-chalkboard me-2"></i> Instructor
+                    </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link dropdown-toggle" data-bs-toggle="collapse" href="#menu2">
@@ -67,11 +58,8 @@
                     </a>
                     <div class="collapse" id="menu2">
                         <ul class="nav flex-column ms-3">
-                            <li><a href="#" class="nav-link" onclick="loadPage('admin-profile.html')"><i
-                                        class="fa fa-user-gear me-2"></i> Admin Profile</a></li>
-                            <!-- <li><a href="#" class="nav-link" onclick="loadPage('form.html')"><i
-                                        class="fa fa-pen me-2"></i> Create User/Form</a></li> -->
-
+                            <li><a href="#" class="nav-link" onclick="loadPage('admin-profile.html')">
+                                    <i class="fa fa-user-gear me-2"></i> Admin Profile</a></li>
                         </ul>
                     </div>
                 </li>

@@ -1,8 +1,96 @@
+<!-- Breadcrumb -->
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
     </ol>
 </nav>
 
-<h2>Dashboard</h2>
-<p>This is the dashboard content.</p>
+<h2 class="mb-4">Dashboard</h2>
+
+<!-- Stats Cards -->
+<div class="row mb-4">
+    <div class="col-md-4 mb-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fa fa-user me-2"></i>Total Students</h5>
+                <h3>1200</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fa fa-graduation-cap me-2"></i>Total Courses</h5>
+                <h3>45</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fa fa-chalkboard-teacher me-2"></i>Total Instructors</h5>
+                <h3>15</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts -->
+<div class="row mb-5">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h5 class="mb-0">Top Courses (Students)</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="courseBarChart" height="190"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mx-4">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h5 class="mb-0">Instructor Distribution</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="instructorPieChart" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Popular Courses and Recent Enrollments -->
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h5 class="mb-0">Popular Courses</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">Python Programming - 300 students</li>
+                    <li class="list-group-item">Web Development - 250 students</li>
+                    <li class="list-group-item">Data Science - 200 students</li>
+                    <li class="list-group-item">Machine Learning - 180 students</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h5 class="mb-0">Recent Enrollments</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">Anita Sharma enrolled in Python Programming</li>
+                    <li class="list-group-item">Ravi Kumar enrolled in Web Development</li>
+                    <li class="list-group-item">Sneha Patel enrolled in Data Science</li>
+                    <li class="list-group-item">Aman Jain enrolled in AI Basics</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

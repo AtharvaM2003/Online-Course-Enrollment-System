@@ -1,9 +1,79 @@
+<!-- Breadcrumb -->
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="#" onclick="loadPage('admin-instructor.html')">Menu</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Instructor</li>
+        <li class="breadcrumb-item"><a href="#" onclick="loadPage('admin-dashboard.html')">Dashboard</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Instructors</li>
     </ol>
 </nav>
 
-<h2>Course Instructor </h2>
-<p>This is Course Instructor in admin</p>
+<h2 class="mb-3">Instructor Master</h2>
+
+<!-- Add Instructor Button -->
+<div class="mb-3">
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addInstructorModal">
+        <i class="fa fa-plus me-1"></i> Add Instructor
+    </button>
+</div>
+
+<!-- Instructor Table -->
+<div class="table-responsive">
+    <table class="table table-bordered align-middle">
+        <thead class="table-light">
+            <tr>
+                <th>Instructor ID</th>
+                <th>Name</th>
+                <th>Expertise</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Sample Row -->
+            <tr>
+                <td>INST001</td>
+                <td>Ravi Sharma</td>
+                <td>Data Science</td>
+                <td>
+                    <button class="btn btn-sm btn-warning me-1"><i class="fa fa-edit"></i></button>
+                    <button class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Add Instructor Modal -->
+<div class="modal fade" id="addInstructorModal" tabindex="-1" aria-labelledby="addInstructorModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form>
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addInstructorModalLabel">Add Instructor</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+
+                    <div class="mb-3">
+                        <label for="instructorId" class="form-label">Instructor ID</label>
+                        <input type="text" class="form-control" id="instructorId" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="instructorName" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="instructorName" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="instructorExpertise" class="form-label">Expertise</label>
+                        <input type="text" class="form-control" id="instructorExpertise" required>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Save Instructor</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
