@@ -1,0 +1,70 @@
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="#" onclick="loadPage('student-dashboard.html')">Dashboard</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Enrolled Courses</li>
+    </ol>
+</nav>
+
+<h2 class="mb-3">Enrolled Courses</h2>
+<p>Browse your enrolled courses. </p>
+
+<!-- Course Cards -->
+<div class="row" id="courseList">
+    <!-- Course Card Example -->
+    <div class="col-md-4 mb-4 course-card" data-price="1800">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Java Programming</h5>
+                <p class="mb-1"><strong>Course ID:</strong> C001</p>
+                <p class="mb-1"><strong>Instructor:</strong> Dr. Ravi Kumar</p>
+                <p class="mb-1"><strong>Duration:</strong> 8 weeks</p>
+                <p class="mb-1"><strong>Enrolled On:</strong> 10-Mar-2025</p>
+                <p class="mb-2"><strong>Price:</strong> ₹1800</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-4 course-card" data-price="2500">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Frontend Development</h5>
+                <p class="mb-1"><strong>Course ID:</strong> C002</p>
+                <p class="mb-1"><strong>Instructor:</strong> Ms. Anjali Verma</p>
+                <p class="mb-1"><strong>Duration:</strong> 6 weeks</p>
+                <p class="mb-1"><strong>Enrolled On:</strong> 22-Mar-2025</p>
+                <p class="mb-2"><strong>Price:</strong> ₹2500</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-4 course-card" data-price="1300">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">SQL & Database Fundamentals</h5>
+                <p class="mb-1"><strong>Course ID:</strong> C003</p>
+                <p class="mb-1"><strong>Instructor:</strong> Mr. Rohit Mehra</p>
+                <p class="mb-1"><strong>Duration:</strong> 4 weeks</p>
+                <p class="mb-1"><strong>Enrolled On:</strong> 01-Apr-2025</p>
+                <p class="mb-2"><strong>Price:</strong> ₹1300</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sorting Script -->
+<script>
+    function filterCourses() {
+        const filter = document.getElementById('priceFilter').value;
+        const courses = [...document.querySelectorAll('.course-card')];
+
+        courses.sort((a, b) => {
+            const priceA = parseInt(a.getAttribute('data-price'));
+            const priceB = parseInt(b.getAttribute('data-price'));
+            return filter === 'low' ? priceA - priceB : filter === 'high' ? priceB - priceA : 0;
+        });
+
+        const courseList = document.getElementById('courseList');
+        courseList.innerHTML = '';
+        courses.forEach(card => courseList.appendChild(card));
+    }
+</script>

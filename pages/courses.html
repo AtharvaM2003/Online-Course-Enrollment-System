@@ -1,10 +1,91 @@
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-
-        <li class="breadcrumb-item"><a href="#" onclick="loadPage('courses.html')">Menu</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Courses</li>
+        <li class="breadcrumb-item"><a href="#" onclick="loadPage('student-dashboard.html')">Dashboard</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Enrolled Courses</li>
     </ol>
 </nav>
 
-<h2>View Course</h2>
-<p>This is all Courses for enrollment</p>
+<h2 class="mb-3">Enroll New Courses</h2>
+<p>Here are all the courses available to enroll.</p>
+
+<!-- Search and Filter Row -->
+<div class="row mb-3">
+    <div class="col-md-6">
+        <!-- Search Bar -->
+        <input type="text" id="searchBar" class="form-control" placeholder="Search courses" onkeyup="searchCourses()">
+    </div>
+    <div class="col-md-2">
+        <!-- Filter -->
+        <select class="form-select" id="priceFilter" onchange="filterCourses()">
+            <option value="default">Sort by Price</option>
+            <option value="low">Price: Low to High</option>
+            <option value="high">Price: High to Low</option>
+        </select>
+    </div>
+</div>
+
+<!-- Course Cards -->
+<div class="row" id="courseList">
+    <!-- Sample Course Card -->
+    <div class="col-md-4 mb-4 course-card" data-price="1500" data-name="Python for Beginners">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <h5 class="card-title">Python for Beginners</h5>
+                <p class="card-text">Learn Python from scratch. Ideal for beginners!</p>
+                <p><strong>Price:</strong> ₹1500</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-4 course-card" data-price="2999" data-name="Full Stack Web Development">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <h5 class="card-title">Full Stack Web Development</h5>
+                <p class="card-text">HTML, CSS, JavaScript, React, Node.js and more.</p>
+                <p><strong>Price:</strong> ₹2999</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-4 course-card" data-price="2200" data-name="Data Science Essentials">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <h5 class="card-title">Data Science Essentials</h5>
+                <p class="card-text">Master data analysis, visualization, and ML basics.</p>
+                <p><strong>Price:</strong> ₹2200</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JS for Price Sorting and Search Functionality -->
+<script>
+    function filterCourses() {
+        const filter = document.getElementById('priceFilter').value;
+        const courses = [...document.querySelectorAll('.course-card')];
+
+        courses.sort((a, b) => {
+            const priceA = parseInt(a.getAttribute('data-price'));
+            const priceB = parseInt(b.getAttribute('data-price'));
+            return filter === 'low' ? priceA - priceB : filter === 'high' ? priceB - priceA : 0;
+        });
+
+        const courseList = document.getElementById('courseList');
+        courseList.innerHTML = '';
+        courses.forEach(card => courseList.appendChild(card));
+    }
+
+    function searchCourses() {
+        const searchQuery = document.getElementById('searchBar').value.toLowerCase();
+        const courses = document.querySelectorAll('.course-card');
+
+        courses.forEach(course => {
+            const courseName = course.getAttribute('data-name').toLowerCase();
+            if (courseName.includes(searchQuery)) {
+                course.style.display = 'block';
+            } else {
+                course.style.display = 'none';
+            }
+        });
+    }
+</script>

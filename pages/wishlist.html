@@ -1,9 +1,107 @@
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="#" onclick="loadPage('wishlist.html')">Menu</a></li>
+        <li class="breadcrumb-item"><a href="#" onclick="loadPage('student-dashboard.html')">Dashboard</a></li>
         <li class="breadcrumb-item active" aria-current="page">Course Wishlist</li>
     </ol>
 </nav>
 
 <h2>Course Wishlist</h2>
-<p>This is course wishlist</p>
+<p></p>
+
+<!-- Search Bar and Sort Filters -->
+<div class="row mb-3">
+    <div class="col-md-6">
+        <input type="text" class="form-control" id="searchCourses" placeholder="Search courses..."
+            onkeyup="searchCourses()">
+    </div>
+    <div class="col-md-3 ms-auto">
+        <select class="form-select" id="priceFilter" onchange="filterCourses()">
+            <option value="default">Sort by Price</option>
+            <option value="low">Price: Low to High</option>
+            <option value="high">Price: High to Low</option>
+        </select>
+    </div>
+</div>
+
+<!-- Course Wishlist Cards -->
+<div class="row" id="wishlistCourses">
+    <!-- Sample Wishlist Course Card -->
+    <div class="col-md-4 mb-4 course-card" data-price="1500">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <h5 class="card-title">Python for Beginners</h5>
+                <p class="card-text">Learn Python from scratch. Ideal for beginners!</p>
+                <p><strong>Price:</strong> ₹1500</p>
+                <button class="btn btn-danger" onclick="removeFromWishlist('Python for Beginners')">Remove</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-4 course-card" data-price="2999">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <h5 class="card-title">Full Stack Web Development</h5>
+                <p class="card-text">HTML, CSS, JavaScript, React, Node.js and more.</p>
+                <p><strong>Price:</strong> ₹2999</p>
+                <button class="btn btn-danger"
+                    onclick="removeFromWishlist('Full Stack Web Development')">Remove</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-4 course-card" data-price="2200">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <h5 class="card-title">Data Science Essentials</h5>
+                <p class="card-text">Master data analysis, visualization, and ML basics.</p>
+                <p><strong>Price:</strong> ₹2200</p>
+                <button class="btn btn-danger" onclick="removeFromWishlist('Data Science Essentials')">Remove</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JS for Search, Filter, and Remove -->
+<script>
+    // Search function
+    function searchCourses() {
+        const query = document.getElementById('searchCourses').value.toLowerCase();
+        const courses = document.querySelectorAll('.course-card');
+
+        courses.forEach(course => {
+            const title = course.querySelector('.card-title').textContent.toLowerCase();
+            if (title.includes(query)) {
+                course.style.display = '';
+            } else {
+                course.style.display = 'none';
+            }
+        });
+    }
+
+    // Filter function
+    function filterCourses() {
+        const filter = document.getElementById('priceFilter').value;
+        const courses = [...document.querySelectorAll('.course-card')];
+
+        courses.sort((a, b) => {
+            const priceA = parseInt(a.getAttribute('data-price'));
+            const priceB = parseInt(b.getAttribute('data-price'));
+            return filter === 'low' ? priceA - priceB : filter === 'high' ? priceB - priceA : 0;
+        });
+
+        const courseList = document.getElementById('wishlistCourses');
+        courseList.innerHTML = '';
+        courses.forEach(card => courseList.appendChild(card));
+    }
+
+    // Remove from Wishlist function
+    function removeFromWishlist(courseName) {
+        const courses = document.querySelectorAll('.course-card');
+        courses.forEach(course => {
+            const title = course.querySelector('.card-title').textContent;
+            if (title === courseName) {
+                course.remove();
+            }
+        });
+    }
+</script>

@@ -10,6 +10,10 @@ function loadPage(page) {
                 if (page === "admin-dashboard.html") {
                     loadDashboardCharts();
                 }
+                if (url === 'student-dashboard.html') {
+                    setTimeout(renderStudentDashboardCharts, 100);
+                }
+
             }, 100); // slight delay ensures DOM is ready
         });
 }
@@ -59,3 +63,30 @@ function loadDashboardCharts() {
         });
     }
 }
+function renderStudentDashboardCharts() {
+    const ctx2 = document.getElementById('enrollmentChart')?.getContext('2d');
+    if (!ctx2) return;
+
+    new Chart(ctx2, {
+        type: 'bar',
+        data: {
+            labels: ['Python Programming', 'Web Development', 'Machine Learning'],
+            datasets: [{
+                label: 'Enrollments',
+                data: [1200, 950, 800],
+                backgroundColor: ['#198754', '#ffc107', '#dc3545'],
+                borderColor: ['#999', '#bbb', '#777'],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+}
+
+// Call the chart render function after the DOM is updated
+setTimeout(renderStudentDashboardCharts, 100);
