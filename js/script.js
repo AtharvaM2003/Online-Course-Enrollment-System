@@ -1,20 +1,45 @@
 
+// function loadPage(page) {
+//     fetch(`pages/${page}`)
+//         .then(response => response.text())
+//         .then(data => {
+//             document.getElementById("main-content").innerHTML = data;
+
+//             setTimeout(() => {
+//                 if (page === "admin-dashboard.html") {
+//                     loadDashboardCharts();
+//                 }
+//                 if (url === 'student-dashboard.html') {
+//                     setTimeout(renderStudentDashboardCharts, 100);
+//                 }
+
+//             }, 100); 
+//         });
+// }
 function loadPage(page) {
     fetch(`pages/${page}`)
         .then(response => response.text())
         .then(data => {
-            document.getElementById("main-content").innerHTML = data;
+            const container = document.getElementById('main-content');
+            container.innerHTML = data;
 
-            // Wait for DOM content to be inserted, then re-run chart setup
-            setTimeout(() => {
-                if (page === "admin-dashboard.html") {
-                    loadDashboardCharts();
+            // Extract and evaluate scripts manually
+            const scripts = container.querySelectorAll('script');
+            scripts.forEach(script => {
+                const newScript = document.createElement('script');
+                if (script.src) {
+                    newScript.src = script.src;
+                } else {
+                    newScript.textContent = script.textContent;
                 }
-                if (url === 'student-dashboard.html') {
-                    setTimeout(renderStudentDashboardCharts, 100);
-                }
-
-            }, 100); // slight delay ensures DOM is ready
+                document.body.appendChild(newScript);
+                script.remove(); // Optional: remove the original script tag
+            });
+        })
+        .catch(err => {
+            document.getElementById('main-content').innerHTML =
+                '<p class="text-danger">Failed to load content.</p>';
+            console.error(err);
         });
 }
 function loadDashboardCharts() {
