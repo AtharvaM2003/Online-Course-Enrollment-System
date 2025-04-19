@@ -1,0 +1,50 @@
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Instructor-wise Course List</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col">Instructor ID</th>
+                            <th scope="col">Instructor Name</th>
+                            <th scope="col">Expertise</th>
+                            <th scope="col">Courses Assigned</th>
+                        </tr>
+                    </thead>
+                    <tbody id="instructorCourseTableBody">
+                        <!-- Dynamic content will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const instructors = [
+        { id: 1, name: 'Dr. Asha Mehta', expertise: 'Python', courses: ['Python Basics', 'Advanced Python'] },
+        { id: 2, name: 'Mr. Rajiv Sharma', expertise: 'Web Development', courses: ['HTML & CSS', 'ReactJS'] },
+        { id: 3, name: 'Dr. Neha Kulkarni', expertise: 'AI & ML', courses: ['Machine Learning', 'Deep Learning'] }
+    ];
+
+    const tbody = document.getElementById("instructorCourseTableBody");
+    instructors.forEach(instr => {
+        const tr = document.createElement("tr");
+
+        tr.innerHTML = `
+            <td>${instr.id}</td>
+            <td>${instr.name}</td>
+            <td>${instr.expertise}</td>
+            <td>
+                <ul class="mb-0">
+                    ${instr.courses.map(course => `<li>${course}</li>`).join('')}
+                </ul>
+            </td>
+        `;
+
+        tbody.appendChild(tr);
+    });
+</script>

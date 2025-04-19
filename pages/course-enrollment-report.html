@@ -1,0 +1,70 @@
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="#" onclick="loadPage('admin-dashboard.html')">Dashboard</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Course Enrollment Report</li>
+    </ol>
+</nav>
+
+<h2 class="mb-3">Course Enrollment Report</h2>
+
+<div class="mb-3">
+    <input type="text" id="searchInput" class="form-control form-control-sm w-25"
+        placeholder="Search by Course Title..." />
+</div>
+
+<div class="table-responsive">
+    <table class="table table-bordered align-middle">
+        <thead class="table-light">
+            <tr>
+
+                <th>Course Title</th>
+                <th>Instructor Name</th>
+                <th>Total Enrollments</th>
+            </tr>
+        </thead>
+        <tbody id="courseEnrollmentTableBody">
+
+        </tbody>
+    </table>
+</div>
+
+<script>
+    (() => {
+        const apiUrl = "http://localhost:3000/Courses";
+        let allCourses = [];
+        const searchInput = document.getElementById("searchInput");
+        const tbody = document.getElementById("courseEnrollmentTableBody");
+
+        searchInput.addEventListener("input", function () {
+            const searchTerm = this.value.toLowerCase();
+            const filtered = allCourses.filter(course =>
+                course.title.toLowerCase().includes(searchTerm)
+            );
+            renderCourses(filtered);
+        });
+        function fetchAndRenderCourses() {
+            fetch(apiUrl)
+                .then(res => res.json())
+                .then(data => {
+                    allCourses = data;
+                    renderCourses(data);
+                });
+        }
+
+        function renderCourses(courses) {
+            tbody.innerHTML = "";
+            courses.forEach(course => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+               
+                    <td>${course.title}</td>
+                    <td>${course.instructorid}</td>
+                    <td>${course.enrolled}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        fetchAndRenderCourses();
+    })();
+</script>

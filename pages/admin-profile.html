@@ -12,37 +12,152 @@
 <!-- Admin Profile Card -->
 <div class="card shadow-sm mb-4">
     <div class="card-body">
-        <form>
-            <div class="mb-3">
-                <label for="adminId" class="form-label">Admin ID</label>
-                <input type="text" class="form-control" id="adminId" value="ADM001" readonly>
-            </div>
+        <form id="form">
 
             <div class="mb-3">
                 <label for="adminName" class="form-label">Full Name</label>
-                <input type="text" class="form-control" id="adminName" value="Ravi Verma">
+                <input type="text" class="form-control" id="adminName" value="">
             </div>
 
             <div class="mb-3">
                 <label for="adminEmail" class="form-label">Email</label>
-                <input type="email" class="form-control" id="adminEmail" value="admin@example.com">
+                <input type="email" class="form-control" id="adminEmail" value="" readonly>
             </div>
 
             <div class="mb-3">
                 <label for="adminPhone" class="form-label">Phone</label>
-                <input type="tel" class="form-control" id="adminPhone" value="9876543210">
+                <input type="tel" class="form-control" id="adminPhone" value="">
             </div>
 
             <div class="mb-3">
                 <label for="adminPassword" class="form-label">Password</label>
-                <input type="password" class="form-control" id="adminPassword" placeholder="********">
+                <input type="password" class="form-control" id="adminPassword" placeholder="">
             </div>
 
             <div class="d-grid">
-                <button type="submit" class="btn btn-success">
+                <button type="submit" id="submit" class="btn btn-success">
                     <i class="fa fa-save me-1"></i> Update Profile
                 </button>
             </div>
         </form>
     </div>
 </div>
+<script>
+    let adminNameInput = document.getElementById("adminName");
+    const adminEmailInput = document.getElementById("adminEmail");
+    const adminPhoneInput = document.getElementById("adminPhone");
+    const adminPassInput = document.getElementById("adminPassword");
+    // const apiUrl = "http://localhost:3000";
+    const form = document.querySelector("form");
+
+    //----------------------------------------------------------------------
+    function loadAdminForEdit() {
+        fetch(`${apiUrl}/Users/${getUserId()}`)
+            .then(res => res.json())
+            .then(data => {
+                adminNameInput.value = data.name;
+                adminEmailInput.value = data.email;
+                adminPhoneInput.value = data.phone;
+                adminPassInput.value = data.password;
+
+            });
+    }
+
+    loadAdminForEdit();
+    //-------------------------------------------------------------------------
+
+    //Validating Username
+    function validateUsername() {
+        if (adminNameInput.value.trim().length >= 5) {
+            adminNameInput.classList.add("is-valid");
+            adminNameInput.classList.remove("is-invalid");
+            return true;
+        } else {
+            adminNameInput.classList.add("is-invalid");
+            adminNameInput.classList.remove("is-valid");
+            return false;
+        }
+    }
+
+    //Validating Pass
+    function validatePassword() {
+        const pass = adminPassInput.value;
+        const passRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}$/;
+
+        if (passRegex.test(pass)) {
+            adminPassInput.classList.add("is-valid");
+            adminPassInput.classList.remove("is-invalid");
+            return true;
+        } else {
+            adminPassInput.classList.add("is-invalid");
+            adminPassInput.classList.remove("is-valid");
+            return false;
+        }
+    }
+
+
+
+
+    function validateMobile() {
+        const mobileRegex = /^[789]\d{9}$/;
+        if (mobileRegex.test(adminPhoneInput.value.trim())) {
+            adminPhoneInput.classList.add("is-valid");
+            adminPhoneInput.classList.remove("is-invalid");
+            return true;
+        } else {
+            adminPhoneInput.classList.add("is-invalid");
+            adminPhoneInput.classList.remove("is-valid");
+            return false;
+        }
+    }
+
+    //---------------------------------------------------------------------------------
+    function getUserId() {
+        return sessionStorage.getItem("userId");
+    }
+
+    function getUserName() {
+        return sessionStorage.getItem("userName");
+    }
+
+    //-----------------------------------------------------
+
+
+    form.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        if (validateUsername() & validateMobile() & validatePassword()) {
+            updateAdmin();
+        }
+    });
+
+
+    //------------------------------------------------------------------
+    function updateAdmin() {
+        const admin = {
+            name: adminNameInput.value.trim(),
+            phone: adminPhoneInput.value.trim(),
+            email: adminEmailInput.value,
+            password: adminPassInput.value.trim(),
+            usertype: "admin"
+        };
+        fetch(`${apiUrl}/Users/${getUserId()}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(admin)
+        }).then(() => {
+
+            loadAdminForEdit();
+            clearValidation();
+        });
+    }
+    //----------------------------------------------------------------
+    function clearValidation() {
+        adminNameInput.classList.remove("is-invalid");
+        adminEmailInput.classList.remove("is-invalid");
+        adminPhoneInput.classList.remove("is-invalid");
+        adminPassInput.classList.remove("is-invalid");
+    }
+
+
+</script>

@@ -83,7 +83,8 @@
         searchInput.addEventListener("input", () => {
             const searchTerm = searchInput.value.toLowerCase();
             const filtered = allInstructors.filter(cat =>
-                cat.name.toLowerCase().includes(searchTerm)
+                cat.name.toLowerCase().includes(searchTerm) ||
+                cat.expertise.toLowerCase().includes(searchTerm)
             );
             renderInstructors(filtered);
         });
@@ -120,6 +121,22 @@
         document.querySelector("th:nth-child(2)").addEventListener("click", () => {
             const sorted = [...allInstructors].sort((a, b) =>
                 a.name.localeCompare(b.name) * sortDirection
+            );
+            sortDirection *= -1;
+            renderInstructors(sorted);
+        });
+        document.querySelector("th:nth-child(3)").style.cursor = "pointer";
+        document.querySelector("th:nth-child(3)").addEventListener("click", () => {
+            const sorted = [...allInstructors].sort((a, b) =>
+                a.expertise.localeCompare(b.expertise) * sortDirection
+            );
+            sortDirection *= -1;
+            renderInstructors(sorted);
+        });
+        document.querySelector("th:nth-child(1)").style.cursor = "pointer";
+        document.querySelector("th:nth-child(2)").addEventListener("click", () => {
+            const sorted = [...allInstructors].sort((a, b) =>
+                a.id.localeCompare(b.id) * sortDirection
             );
             sortDirection *= -1;
             renderInstructors(sorted);

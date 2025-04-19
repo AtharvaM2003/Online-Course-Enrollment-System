@@ -2,19 +2,19 @@
   "Users": [
     {
       "id": "1",
-      "name": "Pratik",
+      "name": "Pratik Hande",
+      "phone": "9876543210",
       "email": "pratik@gmail.com",
-      "password": "pra@1234",
-      "phone": 9876543210,
+      "password": "Pratik@123",
       "usertype": "admin"
     },
     {
-      "id": "2",
-      "name": "Riya",
+      "name": "Riya Gaikwad",
+      "phone": "8765432109",
       "email": "riya@gmail.com",
-      "password": "riya@123",
-      "phone": 8765432109,
-      "usertype": "admin"
+      "password": "Riya@123",
+      "usertype": "admin",
+      "id": "2"
     },
     {
       "id": "3",
@@ -65,29 +65,37 @@
       "usertype": "student"
     },
     {
-      "id": "9",
-      "name": "John",
-      "email": "john@gmail.com",
+      "name": "Rock",
+      "email": "rock@gmail.com",
+      "phone": "9567890123",
       "password": "john@123",
-      "phone": 9567890123,
-      "usertype": "student"
+      "usertype": "student",
+      "id": "9"
     },
     {
-      "id": "10",
       "name": "Kiran",
       "email": "kiran@gmail.com",
+      "phone": "9678901222",
       "password": "kiran@123",
-      "phone": 9678901234,
+      "usertype": "student",
+      "id": "10"
+    },
+    {
+      "id": "ca67",
+      "name": "Atharva",
+      "email": "atharva@gmail.com",
+      "phone": "9678901222",
+      "password": "Ath#2003",
       "usertype": "student"
     }
   ],
   "Courses": [
     {
-      "id": "1",
       "title": "Python Programming",
       "description": "Learn Python from scratch.",
-      "fees": 5000,
-      "instructorid": "1"
+      "instructorid": "1",
+      "fees": 9000,
+      "id": "1"
     },
     {
       "id": "2",
@@ -139,25 +147,18 @@
       "instructorid": "8"
     },
     {
-      "id": "9",
       "title": "Artificial Intelligence",
       "description": "Explore AI applications.",
+      "instructorid": "6",
       "fees": 14000,
-      "instructorid": "9"
+      "id": "9"
     },
     {
       "title": "UI/UX Design",
       "description": "Create beautiful interfaces.",
-      "instructorid": "f712",
+      "instructorid": "8",
       "fees": 9000,
       "id": "10"
-    },
-    {
-      "title": "Web Development",
-      "description": "Jai Shree Ram",
-      "instructorid": "f712",
-      "fees": 10000,
-      "id": "9965"
     }
   ],
   "Instructors": [
@@ -202,17 +203,7 @@
       "expertise": "Mobile Dev"
     },
     {
-      "id": "9",
-      "name": "Dr. Neeraj Verma",
-      "expertise": "AI"
-    },
-    {
-      "id": "10",
-      "name": "Ms. Swati Choudhary",
-      "expertise": "UI/UX"
-    },
-    {
-      "id": "f712",
+      "id": "b9ea",
       "name": "Mr. Atharva Mundhe",
       "expertise": "Java Script"
     }
