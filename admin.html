@@ -4,24 +4,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin</title>
     <link rel="stylesheet" href="../css/bootstrap.min.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <title>Admin</title>
 </head>
 
 <body>
 
-
-    <nav class="navbar navbar-expand-lg bg-light ">
+    <nav class="navbar navbar-expand-lg bg-light">
         <a class="navbar-brand mx-4" href="#">Admin Panel</a>
         <div class="ms-auto dropdown">
-
-            <a class="nav-link dropdown-toggle mx-4" id="profile" href="#" data-bs-toggle="dropdown">
-
-            </a>
-
+            <a class="nav-link dropdown-toggle mx-4" id="profile" href="#" data-bs-toggle="dropdown"></a>
             <ul class="dropdown-menu dropdown-menu-end">
                 <li><a class="dropdown-item" onclick="loadPage('./admin-profile.html')">Profile</a></li>
                 <li><a class="dropdown-item" id="logout">Logout</a></li>
@@ -30,81 +24,106 @@
     </nav>
 
     <div class="d-flex">
-        <!-- Sidebar -->
-        <div class="bg-light sidebar border-right p-3" style="width: 250px; min-height: 100vh;">
+        <aside class="bg-light sidebar border-end p-3" style="width: 250px; min-height: 100vh;">
             <h5 class="mb-3">Navigation</h5>
             <ul class="nav flex-column">
                 <li class="nav-item">
-                    <a href="#" class="nav-link" onclick="loadPage('admin-dashboard.html')">
+                    <a class="nav-link" onclick="loadPage('admin-dashboard.html')">
                         <i class="fa fa-chart-line me-2"></i> Dashboard
                     </a>
                 </li>
+
                 <li class="nav-item">
-                    <a href="#" class="nav-link" onclick="loadPage('admin-course.html')">
-                        <i class="fa-solid fa-graduation-cap me-2"></i> Course
+                    <a class="nav-link d-flex justify-content-between align-items-center collapsed"
+                        data-bs-toggle="collapse" href="#managementMenu" role="button" aria-expanded="false"
+                        aria-controls="managementMenu">
+                        <span><i class="fa-solid fa-gear me-2"></i> Management</span>
+                        <i class="fa-solid fa-chevron-down"></i>
                     </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link" onclick="loadPage('admin-student.html')">
-                        <i class="fa-solid fa-user me-2"></i> Student
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link" onclick="loadPage('admin-instructor.html')">
-                        <i class="fa-solid fa-person-chalkboard me-2"></i> Instructor
-                    </a>
+                    <div class="collapse ps-3" id="managementMenu">
+                        <a class="nav-link small" onclick="loadPage('admin-course.html')">
+                            <i class="fa-solid fa-graduation-cap me-2"></i> Course
+                        </a>
+                        <a class="nav-link small" onclick="loadPage('admin-student.html')">
+                            <i class="fa-solid fa-user me-2"></i> Student
+                        </a>
+                        <a class="nav-link small" onclick="loadPage('admin-instructor.html')">
+                            <i class="fa-solid fa-person-chalkboard me-2"></i> Instructor
+                        </a>
+                    </div>
                 </li>
 
+                <li class="nav-item">
+                    <a class="nav-link d-flex justify-content-between align-items-center collapsed"
+                        data-bs-toggle="collapse" href="#reportsMenu" role="button" aria-expanded="false"
+                        aria-controls="reportsMenu">
+                        <span><i class="fa-solid fa-clipboard-list me-2"></i> Reports</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </a>
+                    <div class="collapse ps-3" id="reportsMenu">
+                        <a class="nav-link small" onclick="loadPage('course-enrollment-report.html')">
+                            <i class="fa-solid fa-list-check me-2"></i> Enrollment Report
+                        </a>
+                        <a class="nav-link small" onclick="loadPage('instructor-course-list.html')">
+                            <i class="fa-solid fa-book-open-reader me-2"></i> Instructor Courses
+                        </a>
+                    </div>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link d-flex justify-content-between align-items-center collapsed"
+                        data-bs-toggle="collapse" href="#queriesMenu" role="button" aria-expanded="false"
+                        aria-controls="queriesMenu">
+                        <span><i class="fa-solid fa-circle-question me-2"></i> Queries</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </a>
+                    <div class="collapse ps-3" id="queriesMenu">
+                        <a class="nav-link small" onclick="loadPage('admin-query1.html')">
+                            <i class="fa-solid fa-user-graduate me-2"></i> Courses by Student
+                        </a>
+                        <a class="nav-link small" onclick="loadPage('admin-query2.html')">
+                            <i class="fa-solid fa-users-rectangle me-2"></i> Students per Course
+                        </a>
+                    </div>
+                </li>
             </ul>
-            <h5 class="mt-4 mb-3">Reports</h5>
-            <ul class="nav flex-column">
-                <li class="nav-item">
-                    <a href="#" class="nav-link" onclick="loadPage('course-enrollment-report.html')">
-                        <i class="fa-solid fa-list-check me-2"></i> Enrollment Report
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link" onclick="loadPage('instructor-course-list.html')">
-                        <i class="fa-solid fa-book-open-reader me-2"></i> Instructor Courses
-                    </a>
-                </li>
-            </ul>
-        </div>
+        </aside>
 
 
-        <div class="p-4" style="flex: 1;" id="main-content">
+        <main class="p-4" style="flex: 1;" id="main-content">
             <h2>Welcome to Admin Dashboard</h2>
             <p>This is the main dashboard content.</p>
-        </div>
+        </main>
     </div>
 
-    <!-- Footer -->
     <footer class="bg-light border text-center py-3">
         &copy; 2025 Admin Dashboard. All rights reserved.
     </footer>
 
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/script.js"></script>
     <script>
-        const adminProfile = document.getElementById("profile");
-        const adminLogout = document.getElementById("logout");
+        (() => {
+            const adminProfile = document.getElementById("profile");
+            const adminLogout = document.getElementById("logout");
 
-        adminProfile.innerHTML = `<i class="fa fa-user mx-2"></i> ${getUserName()}`;
-        adminLogout.addEventListener("click", function (e) {
-            sessionStorage.clear();
-            sessionStorage.setItem("loggedOut", "true");
-            window.location.href = "./pages/login.html";
-        })
+            adminProfile.innerHTML = `<i class="fa fa-user mx-2"></i> ${getUserName()}`;
+            adminLogout.addEventListener("click", function (e) {
+                sessionStorage.clear();
+                sessionStorage.setItem("loggedOut", "true");
+                window.location.href = "./pages/login.html";
+            })
 
 
-        function getUserId() {
-            return sessionStorage.getItem("userId");
-        }
+            function getUserId() {
+                return sessionStorage.getItem("userId");
+            }
 
-        function getUserName() {
-            return sessionStorage.getItem("userName");
-        }
-
+            function getUserName() {
+                return sessionStorage.getItem("userName");
+            }
+        })();
     </script>
 
 </body>

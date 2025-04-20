@@ -1,12 +1,12 @@
 {
   "Users": [
     {
-      "id": "1",
-      "name": "Pratik Hande",
+      "name": "Pratik",
       "phone": "9876543210",
       "email": "pratik@gmail.com",
       "password": "Pratik@123",
-      "usertype": "admin"
+      "usertype": "admin",
+      "id": "1"
     },
     {
       "name": "Riya Gaikwad",
@@ -50,10 +50,10 @@
     },
     {
       "id": "7",
-      "name": "Vikas",
+      "name": "Vikas Sharma",
       "email": "vikas@gmail.com",
-      "password": "vikas@123",
-      "phone": 9345678901,
+      "password": "Vikas@123",
+      "phone": "9345678901",
       "usertype": "student"
     },
     {
@@ -84,7 +84,7 @@
       "id": "ca67",
       "name": "Atharva",
       "email": "atharva@gmail.com",
-      "phone": "9678901222",
+      "phone": "9307773582",
       "password": "Ath#2003",
       "usertype": "student"
     }
@@ -159,6 +159,13 @@
       "instructorid": "8",
       "fees": 9000,
       "id": "10"
+    },
+    {
+      "id": "9c45",
+      "title": "JAVA Programming",
+      "description": "Learn Java",
+      "instructorid": "b9ea",
+      "fees": "2000"
     }
   ],
   "Instructors": [
@@ -211,63 +218,93 @@
   "Enrollments": [
     {
       "id": "1",
+      "userid": "6",
       "courseid": "1",
-      "instructorid": "1",
       "enrollmentdate": "2024-01-10"
     },
     {
       "id": "2",
+      "userid": "7",
       "courseid": "2",
-      "instructorid": "2",
       "enrollmentdate": "2024-02-15"
     },
     {
       "id": "3",
+      "userid": "8",
       "courseid": "3",
-      "instructorid": "3",
       "enrollmentdate": "2024-03-20"
     },
     {
       "id": "4",
+      "userid": "9",
       "courseid": "4",
-      "instructorid": "4",
       "enrollmentdate": "2024-04-25"
     },
     {
       "id": "5",
+      "userid": "10",
       "courseid": "5",
-      "instructorid": "5",
       "enrollmentdate": "2024-05-30"
     },
     {
       "id": "6",
+      "userid": "ca67",
       "courseid": "6",
-      "instructorid": "6",
       "enrollmentdate": "2024-06-05"
     },
     {
       "id": "7",
+      "userid": "6",
       "courseid": "7",
-      "instructorid": "7",
       "enrollmentdate": "2024-07-10"
     },
     {
       "id": "8",
+      "userid": "7",
       "courseid": "8",
-      "instructorid": "8",
       "enrollmentdate": "2024-08-15"
     },
     {
       "id": "9",
+      "userid": "8",
       "courseid": "9",
-      "instructorid": "9",
       "enrollmentdate": "2024-09-20"
     },
     {
       "id": "10",
+      "userid": "9",
       "courseid": "10",
-      "instructorid": "10",
       "enrollmentdate": "2024-10-25"
+    },
+    {
+      "id": "11",
+      "userid": "8",
+      "courseid": "10",
+      "enrollmentdate": "2024-10-25"
+    },
+    {
+      "id": "12",
+      "userid": "2",
+      "courseid": "9",
+      "enrollmentdate": "2024-10-25"
+    },
+    {
+      "id": "0c87",
+      "userid": "7",
+      "courseid": "2",
+      "enrollmentdate": "2025-04-20"
+    },
+    {
+      "id": "0d49",
+      "userid": "ca67",
+      "courseid": "1",
+      "enrollmentdate": "2025-04-20"
+    },
+    {
+      "id": "7aa6",
+      "userid": "ca67",
+      "courseid": "9c45",
+      "enrollmentdate": "2025-04-20"
     }
   ]
 }

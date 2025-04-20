@@ -12,86 +12,62 @@
 
 <body onload="loadPage('student-dashboard.html')">
 
-    <!-- Navbar -->
     <nav class="navbar navbar-expand-lg bg-light">
         <a class="navbar-brand mx-3" href="#">Student Panel</a>
         <div class="ms-auto dropdown">
-            <a class="nav-link dropdown-toggle mx-3" href="#" data-bs-toggle="dropdown">
-                <i class="fa fa-user"></i> Student
+            <a class="nav-link dropdown-toggle mx-3" href="#" id="profile" data-bs-toggle="dropdown" role="button"
+                aria-expanded="false">
+
             </a>
-            <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item" href="#">Profile</a></li>
-                <li><a class="dropdown-item" href="#">Logout</a></li>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profile">
+                <li><a class="dropdown-item" href="#" onclick="loadPage('student-profile.html')">Profile</a></li>
+                <li><a class="dropdown-item" href="#" id="logout">Logout</a></li>
             </ul>
         </div>
+
     </nav>
 
     <div class="d-flex">
-        <!-- Sidebar -->
+
         <div class="bg-light sidebar border-right p-3" style="width: 250px; min-height: 100vh;">
             <h5 class="mb-3">Navigation</h5>
             <ul class="nav flex-column">
-                <!-- Dashboard -->
+
                 <li class="nav-item">
                     <a href="#" class="nav-link" onclick="loadPage('student-dashboard.html')">
                         <i class="fa fa-chart-line me-2"></i> Dashboard
                     </a>
                 </li>
 
-                <!-- Enroll New Course -->
                 <li class="nav-item">
                     <a href="#" class="nav-link" onclick="loadPage('courses.html')">
                         <i class="fa-solid fa-plus me-2"></i> Enroll New Course
                     </a>
                 </li>
 
-                <!-- My Courses -->
                 <li class="nav-item">
                     <a href="#" class="nav-link" onclick="loadPage('enrolled-course.html')">
                         <i class="fa-solid fa-graduation-cap me-2"></i> My Courses
                     </a>
                 </li>
 
-                <!-- Profile -->
-                <li class="nav-item">
-                    <a href="#" class="nav-link" onclick="loadPage('student-profile.html')">
-                        <i class="fa-solid fa-user me-2"></i> Profile
-                    </a>
-                </li>
 
-                <!-- Wishlist/Cart -->
                 <li class="nav-item">
                     <a href="#" class="nav-link" onclick="loadPage('wishlist.html')">
                         <i class="fa-solid fa-cart-shopping me-2"></i> Wishlist/Cart
                     </a>
                 </li>
 
-                <!-- Settings Dropdown -->
-                <li class="nav-item">
-                    <a class="nav-link dropdown-toggle" data-bs-toggle="collapse" href="#menu2">
-                        <i class="fa fa-cog me-2"></i> Settings
-                    </a>
-                    <div class="collapse" id="menu2">
-                        <ul class="nav flex-column ms-3">
-                            <li>
-                                <a href="#" class="nav-link" onclick="loadPage('help-center.html')">
-                                    <i class="fa-solid fa-circle-info me-2"></i> Help Center
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
+
             </ul>
         </div>
 
-        <!-- Main Content -->
         <div class="p-4" style="flex: 1;" id="main-content">
             <h2>Welcome to Student Dashboard</h2>
             <p>This is the main dashboard content.</p>
         </div>
     </div>
 
-    <!-- Footer -->
     <footer class="bg-light border text-center py-3">
         &copy; 2025 Student Dashboard. All rights reserved.
     </footer>
@@ -99,6 +75,28 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/script.js"></script>
 
+    <script>
+        (() => {
+            const studentProfile = document.getElementById("profile");
+            const studentLogout = document.getElementById("logout");
+
+            studentProfile.innerHTML = `<i class="fa fa-user mx-2"></i> ${getUserName()}`;
+            studentLogout.addEventListener("click", function (e) {
+                sessionStorage.clear();
+                sessionStorage.setItem("loggedOut", "true");
+                window.location.href = "./pages/login.html";
+            })
+
+
+            function getUserId() {
+                return sessionStorage.getItem("userId");
+            }
+
+            function getUserName() {
+                return sessionStorage.getItem("userName");
+            }
+        })();
+    </script>
 </body>
 
 </html>

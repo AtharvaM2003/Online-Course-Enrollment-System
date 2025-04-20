@@ -1,12 +1,16 @@
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="#" onclick="loadPage('admin-dashboard.html')">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="#" onclick="loadPage('admin-dashboard.html')">Management</a></li>
         <li class="breadcrumb-item active" aria-current="page">Students</li>
     </ol>
 </nav>
 
 <h2 class="mb-3">Student Master</h2>
-
+<div class="mb-3">
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addStudentModal" data-id="chbtn">
+        <i class="fa fa-plus me-1"></i> Add Student
+    </button>
+</div>
 <div class="mb-3">
 
 </div>
@@ -108,17 +112,22 @@
             renderStudents(sorted);
         });
 
+        let filtered = allStudents.filter(c => c.name.toLowerCase().includes(searchTerm) || c.email.toLowerCase().includes(searchTerm) || String(c.phone).includes(String(searchTerm)));
+
+        // Search bar setup
         searchInput.setAttribute("type", "text");
-        searchInput.setAttribute("placeholder", "Search Students...");
+        searchInput.setAttribute("placeholder", "Search by Instructor Name...");
         searchInput.classList.add("form-control", "mb-3");
         document.querySelector(".table").parentNode.insertBefore(searchInput, document.querySelector(".table"));
+
         searchInput.addEventListener("input", () => {
             const searchTerm = searchInput.value.toLowerCase();
             let filtered = allStudents.filter(c => c.name.toLowerCase().includes(searchTerm) || c.email.toLowerCase().includes(searchTerm) || String(c.phone).includes(String(searchTerm)));
 
-
-            renderStudents(filtered);
+            renderInstructors(filtered);
         });
+
+
 
 
         //-------------------------------------------------------

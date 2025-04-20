@@ -6,65 +6,82 @@
 </nav>
 
 <h2 class="mb-3">Enrolled Courses</h2>
-<p>Browse your enrolled courses. </p>
+<p>Browse your enrolled courses.</p>
 
-<!-- Course Cards -->
-<div class="row" id="courseList">
-    <!-- Course Card Example -->
-    <div class="col-md-4 mb-4 course-card" data-price="1800">
-        <div class="card h-100 shadow-sm">
-            <div class="card-body">
-                <h5 class="card-title">Java Programming</h5>
-                <p class="mb-1"><strong>Course ID:</strong> C001</p>
-                <p class="mb-1"><strong>Instructor:</strong> Dr. Ravi Kumar</p>
-                <p class="mb-1"><strong>Duration:</strong> 8 weeks</p>
-                <p class="mb-1"><strong>Enrolled On:</strong> 10-Mar-2025</p>
-                <p class="mb-2"><strong>Price:</strong> ₹1800</p>
-            </div>
-        </div>
-    </div>
+<div class="row" id="enrolledCourseList"></div>
 
-    <div class="col-md-4 mb-4 course-card" data-price="2500">
-        <div class="card h-100 shadow-sm">
-            <div class="card-body">
-                <h5 class="card-title">Frontend Development</h5>
-                <p class="mb-1"><strong>Course ID:</strong> C002</p>
-                <p class="mb-1"><strong>Instructor:</strong> Ms. Anjali Verma</p>
-                <p class="mb-1"><strong>Duration:</strong> 6 weeks</p>
-                <p class="mb-1"><strong>Enrolled On:</strong> 22-Mar-2025</p>
-                <p class="mb-2"><strong>Price:</strong> ₹2500</p>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-4 mb-4 course-card" data-price="1300">
-        <div class="card h-100 shadow-sm">
-            <div class="card-body">
-                <h5 class="card-title">SQL & Database Fundamentals</h5>
-                <p class="mb-1"><strong>Course ID:</strong> C003</p>
-                <p class="mb-1"><strong>Instructor:</strong> Mr. Rohit Mehra</p>
-                <p class="mb-1"><strong>Duration:</strong> 4 weeks</p>
-                <p class="mb-1"><strong>Enrolled On:</strong> 01-Apr-2025</p>
-                <p class="mb-2"><strong>Price:</strong> ₹1300</p>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Sorting Script -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    function filterCourses() {
-        const filter = document.getElementById('priceFilter').value;
-        const courses = [...document.querySelectorAll('.course-card')];
+    (() => {
+        const apiBaseUrl = "http://localhost:3000";
+        const enrolledCourseList = document.getElementById('enrolledCourseList');
 
-        courses.sort((a, b) => {
-            const priceA = parseInt(a.getAttribute('data-price'));
-            const priceB = parseInt(b.getAttribute('data-price'));
-            return filter === 'low' ? priceA - priceB : filter === 'high' ? priceB - priceA : 0;
-        });
+        let instructorList = [];
+        let allCourseList = [];
 
-        const courseList = document.getElementById('courseList');
-        courseList.innerHTML = '';
-        courses.forEach(card => courseList.appendChild(card));
-    }
+        function getUserId() {
+            return sessionStorage.getItem("userId");
+        }
+
+        async function loadEnrolledCourses() {
+            try {
+                const [instructorRes, courseRes, enrollmentRes] = await Promise.all([
+                    fetch(`${apiBaseUrl}/Instructors`),
+                    fetch(`${apiBaseUrl}/Courses`),
+                    fetch(`${apiBaseUrl}/Enrollments?userid=${getUserId()}`)
+                ]);
+
+                instructorList = await instructorRes.json();
+                allCourseList = await courseRes.json();
+                const enrollments = await enrollmentRes.json();
+
+                const enrolledCourses = enrollments.map(enroll => {
+                    const course = allCourseList.find(c => c.id === enroll.courseid);
+                    const instructor = instructorList.find(i => i.id === course.instructorid);
+                    return {
+                        title: course.title,
+                        description: course.description,
+                        duration: course.duration || "N/A",
+                        fees: course.fees,
+                        courseId: course.courseid || course.id,
+                        instructorName: instructor ? instructor.name : "N/A",
+                        enrolledOn: enroll.enrollmentdate
+                    };
+                });
+
+                renderEnrolledCourses(enrolledCourses);
+
+            } catch (error) {
+                console.error('Error loading enrolled courses:', error);
+            }
+        }
+
+        function renderEnrolledCourses(courses) {
+            enrolledCourseList.innerHTML = "";
+            courses.forEach(course => {
+                const card = document.createElement('div');
+                card.className = "col-md-4 mb-4 course-card";
+                card.setAttribute('data-price', course.fees);
+                card.innerHTML = `
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">${course.title}</h5>
+                        <p class="mb-1"><strong>Instructor:</strong> ${course.instructorName}</p>
+                        <p class="mb-1"><strong>Enrolled On:</strong> ${formatDate(course.enrolledOn)}</p>
+                        <p class="mb-2"><strong>Price:</strong> ₹${course.fees}</p>
+                    </div>
+                </div>
+            `;
+                enrolledCourseList.appendChild(card);
+            });
+        }
+
+        function formatDate(dateStr) {
+            const options = { day: '2-digit', month: 'short', year: 'numeric' };
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('en-GB', options).replace(/ /g, '-');
+        }
+
+        loadEnrolledCourses();
+    })();
 </script>

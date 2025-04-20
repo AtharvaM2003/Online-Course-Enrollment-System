@@ -22,7 +22,7 @@ function loadPage(page) {
             // Load charts only for specific pages
             setTimeout(() => {
                 if (page === "admin-dashboard.html") {
-                    loadDashboardCharts();
+                    // loadDashboardCharts();
                 } else if (page === "student-dashboard.html") {
                     renderStudentDashboardCharts();
                 }

@@ -61,47 +61,58 @@
 </div>
 
 
-
 <script>
-    let allStudents = [];
-    let allCourses = [];
-    let allInstructors = [];
-    const totalStudent = document.getElementById("tstud");
-    const totalCourse = document.getElementById("tcourse");
-    const totalInstructors = document.getElementById("tinstruct");
-    const apiUrl = "http://localhost:3000";
-    function fetchStudent() {
-        fetch(`${apiUrl}/Users`)
-            .then(res => res.json())
-            .then(users => {
-                allStudents = users.filter(user => user.usertype === "student");
-                totalStudent.textContent = allStudents.length;
-            })
-            .catch(error => {
-                console.error("Error fetching users:", error);
-                totalStudent.textContent = "Error";
-            });
-    }
-    function fetchCourses() {
-        fetch(`${apiUrl}/Courses`)
-            .then(res => res.json())
-            .then(data => {
-                allCourses = data;
-                totalCourse.textContent = allCourses.length;
-            });
-    }
-    function fetchInstructors() {
-        fetch(`${apiUrl}/Instructors`)
-            .then(res => res.json())
-            .then(data => {
-                allInstructors = data;
-                totalInstructors.textContent = allInstructors.length;
-            });
-    }
+    (() => {
+        const mainUrl = "http://localhost:3000";
+        const totalStudentCount = document.getElementById("tstud");
+        const totalCourseCount = document.getElementById("tcourse");
+        const totalInstructorCount = document.getElementById("tinstruct");
 
+        let studentList = [];
+        let courseList = [];
+        let instructorList = [];
 
-    fetchInstructors();
-    fetchStudent();
-    fetchCourses();
+        function loadStudents() {
+            fetch(`${mainUrl}/Users`)
+                .then(res => res.json())
+                .then(data => {
+                    studentList = data.filter(user => user.usertype === "student");
+                    totalStudentCount.textContent = studentList.length;
+                })
+                .catch(error => {
+                    console.error("Error fetching students:", error);
+                    totalStudentCount.textContent = "Error";
+                });
+        }
 
+        function loadCourses() {
+            fetch(`${mainUrl}/Courses`)
+                .then(res => res.json())
+                .then(data => {
+                    courseList = data;
+                    totalCourseCount.textContent = courseList.length;
+                })
+                .catch(error => {
+                    console.error("Error fetching courses:", error);
+                    totalCourseCount.textContent = "Error";
+                });
+        }
+
+        function loadInstructors() {
+            fetch(`${mainUrl}/Instructors`)
+                .then(res => res.json())
+                .then(data => {
+                    instructorList = data;
+                    totalInstructorCount.textContent = instructorList.length;
+                })
+                .catch(error => {
+                    console.error("Error fetching instructors:", error);
+                    totalInstructorCount.textContent = "Error";
+                });
+        }
+
+        loadStudents();
+        loadCourses();
+        loadInstructors();
+    })();
 </script>

@@ -1,50 +1,106 @@
-<div class="container mt-4">
-    <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white">
-            <h5 class="mb-0">Instructor-wise Course List</h5>
-        </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-bordered table-hover align-middle">
-                    <thead class="table-light">
-                        <tr>
-                            <th scope="col">Instructor ID</th>
-                            <th scope="col">Instructor Name</th>
-                            <th scope="col">Expertise</th>
-                            <th scope="col">Courses Assigned</th>
-                        </tr>
-                    </thead>
-                    <tbody id="instructorCourseTableBody">
-                        <!-- Dynamic content will be inserted here -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="#" onclick="loadPage('admin-dashboard.html')">Reports</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Instructor-wise Course List</li>
+    </ol>
+</nav>
+
+<h2 class="mb-3">Instructor-wise Course List</h2>
+
+<div class="mb-3">
+    <input type="text" id="instructorSearchInput" class="form-control form-control mb-3"
+        placeholder="Search by Instructor Name..." />
+</div>
+
+<div class="table-responsive">
+    <table class="table table-bordered align-middle">
+        <thead class="table-light">
+            <tr>
+                <th>Instructor ID</th>
+                <th>Instructor Name</th>
+
+                <th>Expertise</th>
+                <th>Courses Assigned</th>
+            </tr>
+        </thead>
+        <tbody id="instructorCourseTableBody">
+            <!-- Data dynamically populated here -->
+        </tbody>
+    </table>
 </div>
 
 <script>
-    const instructors = [
-        { id: 1, name: 'Dr. Asha Mehta', expertise: 'Python', courses: ['Python Basics', 'Advanced Python'] },
-        { id: 2, name: 'Mr. Rajiv Sharma', expertise: 'Web Development', courses: ['HTML & CSS', 'ReactJS'] },
-        { id: 3, name: 'Dr. Neha Kulkarni', expertise: 'AI & ML', courses: ['Machine Learning', 'Deep Learning'] }
-    ];
+    (() => {
+        const apiUrl = "http://localhost:3000";
+        let instructors = [];
+        let courses = [];
+        let sortDirection = 1;
+        const tbody = document.getElementById("instructorCourseTableBody");
+        const searchInput = document.getElementById("instructorSearchInput");
+        //---------------------------------------------------------------------------------
+        document.querySelector("th:nth-child(2)").style.cursor = "pointer";
+        document.querySelector("th:nth-child(2)").addEventListener("click", () => {
+            const sorted = [...instructors].sort((a, b) =>
+                a.name.localeCompare(b.name) * sortDirection
+            );
+            sortDirection *= -1;
+            renderTable(sorted);
+        });
+        document.querySelector("th:nth-child(3)").style.cursor = "pointer";
+        document.querySelector("th:nth-child(3)").addEventListener("click", () => {
+            const sorted = [...instructors].sort((a, b) =>
+                a.expertise.localeCompare(b.expertise) * sortDirection
+            );
+            sortDirection *= -1;
+            renderTable(sorted);
+        });
 
-    const tbody = document.getElementById("instructorCourseTableBody");
-    instructors.forEach(instr => {
-        const tr = document.createElement("tr");
 
-        tr.innerHTML = `
-            <td>${instr.id}</td>
-            <td>${instr.name}</td>
-            <td>${instr.expertise}</td>
-            <td>
-                <ul class="mb-0">
-                    ${instr.courses.map(course => `<li>${course}</li>`).join('')}
-                </ul>
-            </td>
-        `;
+        //---------------------------------------------------------------------------------
 
-        tbody.appendChild(tr);
-    });
+        function renderTable(data) {
+            tbody.innerHTML = "";
+            data.forEach(instructor => {
+                const assignedCourses = courses
+                    .filter(course => course.instructorid == instructor.id)
+                    .map(course => `<li>${course.title}</li>`)
+                    .join("") || "<li>No Courses</li>";
+
+                const row = `
+                    <tr>
+                         <td>${instructor.id}</td>
+                        <td>${instructor.name}</td>
+                       
+                        <td>${instructor.expertise || 'N/A'}</td>
+                        <td><ul class="mb-0 ps-3">${assignedCourses}</ul></td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function loadInstructorCourseData() {
+            Promise.all([
+                fetch(`${apiUrl}/Instructors`).then(res => res.json()),
+                fetch(`${apiUrl}/Courses`).then(res => res.json())
+            ])
+                .then(([instructorData, courseData]) => {
+                    instructors = instructorData;
+                    courses = courseData;
+                    renderTable(instructors);
+                })
+                .catch(err => console.error("Error loading data:", err));
+        }
+
+        searchInput.addEventListener("input", () => {
+            const keyword = searchInput.value.toLowerCase();
+            const filtered = instructors.filter(instr =>
+                instr.name.toLowerCase().includes(keyword) ||
+                instr.expertise.toLowerCase().includes(keyword)
+            );
+            renderTable(filtered);
+        });
+
+        loadInstructorCourseData();
+    })();
 </script>

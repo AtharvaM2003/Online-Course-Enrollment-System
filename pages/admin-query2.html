@@ -1,0 +1,87 @@
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="#" onclick="loadPage('admin-query2.html')">Queries</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Students by Course</li>
+    </ol>
+</nav>
+
+<div class="container mt-4">
+    <div class="form-group">
+        <label for="courseDropdown">Select Course:</label>
+        <select class="form-control" id="courseDropdown">
+            <option value="">-- Select Course --</option>
+        </select>
+    </div>
+
+    <h4 class="mt-4">Students Enrolled:</h4>
+    <ul id="studentList" class="list-group"></ul>
+</div>
+
+<script>
+    (() => {
+        let users = [];
+        let enrollments = [];
+        let courses = [];
+
+        async function fetchData() {
+            try {
+                const usersRes = await fetch('http://localhost:3000/Users');
+                users = await usersRes.json();
+
+                const enrollmentsRes = await fetch('http://localhost:3000/Enrollments');
+                enrollments = await enrollmentsRes.json();
+
+                const coursesRes = await fetch('http://localhost:3000/Courses');
+                courses = await coursesRes.json();
+
+                populateCourseDropdown();
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+
+        function populateCourseDropdown() {
+            const dropdown = document.getElementById('courseDropdown');
+            courses.forEach(course => {
+                const option = document.createElement('option');
+                option.value = course.id;
+                option.textContent = course.title;
+                dropdown.appendChild(option);
+            });
+
+            // ✅ Attach event listener dynamically
+            dropdown.addEventListener('change', fetchStudents);
+        }
+
+        function fetchStudents() {
+            const selectedCourseId = document.getElementById('courseDropdown').value;
+            const studentList = document.getElementById('studentList');
+            studentList.innerHTML = '';
+
+            if (selectedCourseId) {
+                const enrolledStudents = enrollments.filter(enrollment => enrollment.courseid == selectedCourseId);
+
+                if (enrolledStudents.length > 0) {
+                    enrolledStudents.forEach(enrollment => {
+                        const user = users.find(u => u.id == enrollment.userid);
+                        if (user) {
+                            const li = document.createElement('li');
+                            li.className = 'list-group-item';
+                            li.textContent = `${user.name} - ${user.email} - ${user.phone}`;
+                            studentList.appendChild(li);
+                        }
+                    });
+                } else {
+                    const li = document.createElement('li');
+                    li.className = 'list-group-item';
+                    li.textContent = 'No students enrolled.';
+                    studentList.appendChild(li);
+                }
+            }
+        }
+
+        fetchData();
+    })();
+</script>
