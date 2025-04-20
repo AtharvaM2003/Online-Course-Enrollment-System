@@ -111,13 +111,14 @@
             const adminProfile = document.getElementById("profile");
             const adminLogout = document.getElementById("logout");
 
+
+            //Set Name to Admin Profile----------------------------------------
             adminProfile.innerHTML = `<i class="fa fa-user mx-2"></i> ${getUserName()}`;
             adminLogout.addEventListener("click", function (e) {
                 sessionStorage.clear();
                 sessionStorage.setItem("loggedOut", "true");
                 window.location.href = "./pages/login.html";
             })
-
 
             function getUserId() {
                 return sessionStorage.getItem("userId");

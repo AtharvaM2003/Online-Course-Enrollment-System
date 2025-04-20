@@ -21,51 +21,58 @@
 
 <script>
     (() => {
-        let users = [];
-        let enrollments = [];
-        let courses = [];
+        let allUsers = [];
+        let allEnrollments = [];
+        let allCourses = [];
+        const userUrl = 'http://localhost:3000/Users';
+        const EnrollmentsUrl = 'http://localhost:3000/Enrollments';
+        const CoursesUrl = 'http://localhost:3000/Courses';
 
-        async function fetchData() {
-            try {
-                const usersRes = await fetch('http://localhost:3000/Users');
-                users = await usersRes.json();
-
-                const enrollmentsRes = await fetch('http://localhost:3000/Enrollments');
-                enrollments = await enrollmentsRes.json();
-
-                const coursesRes = await fetch('http://localhost:3000/Courses');
-                courses = await coursesRes.json();
-
-                populateCourseDropdown();
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
+        //Fetch User, Enrollments, Courses------------------------------------------
+        function fetchData() {
+            Promise.all([
+                fetch(userUrl).then(res => res.json()),
+                fetch(EnrollmentsUrl).then(res => res.json()),
+                fetch(CoursesUrl).then(res => res.json())
+            ])
+                .then(([usersData, enrollmentsData, coursesData]) => {
+                    allUsers = usersData;
+                    allEnrollments = enrollmentsData;
+                    allCourses = coursesData;
+                    renderCourseDropdown();
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                });
         }
 
-        function populateCourseDropdown() {
+
+        //Display User, Enrollments, Courses in Select------------------------------------------
+        function renderCourseDropdown() {
             const dropdown = document.getElementById('courseDropdown');
-            courses.forEach(course => {
+            allCourses.forEach(course => {
                 const option = document.createElement('option');
                 option.value = course.id;
                 option.textContent = course.title;
                 dropdown.appendChild(option);
             });
 
-            // ✅ Attach event listener dynamically
             dropdown.addEventListener('change', fetchStudents);
         }
 
+
+        //Display Student of Enrolled Courses----------------------------------------
         function fetchStudents() {
             const selectedCourseId = document.getElementById('courseDropdown').value;
             const studentList = document.getElementById('studentList');
             studentList.innerHTML = '';
 
             if (selectedCourseId) {
-                const enrolledStudents = enrollments.filter(enrollment => enrollment.courseid == selectedCourseId);
+                const enrolledStudents = allEnrollments.filter(enrollment => enrollment.courseid == selectedCourseId);
 
                 if (enrolledStudents.length > 0) {
                     enrolledStudents.forEach(enrollment => {
-                        const user = users.find(u => u.id == enrollment.userid);
+                        const user = allUsers.find(u => u.id == enrollment.userid);
                         if (user) {
                             const li = document.createElement('li');
                             li.className = 'list-group-item';
@@ -84,4 +91,6 @@
 
         fetchData();
     })();
+    //END--------------------------------------------------------------------------
+
 </script>

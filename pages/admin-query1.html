@@ -19,32 +19,37 @@
     <ul id="courseList" class="list-group"></ul>
 </div>
 
-<script>
-    (() => {
-        let users = [];
-        let enrollments = [];
-        let courses = [];
+<script>(() => {
+        let allUsers = [];
+        let allEnrollments = [];
+        let allCourses = [];
+        const userUrl = 'http://localhost:3000/Users';
+        const EnrollmentsUrl = 'http://localhost:3000/Enrollments';
+        const CoursesUrl = 'http://localhost:3000/Courses';
+        const dropdown = document.getElementById('studentDropdown');
 
-        async function fetchData() {
-            try {
-                const usersRes = await fetch('http://localhost:3000/Users');
-                users = await usersRes.json();
+        //Fetch User, Enrollments, Courses------------------------------------------
+        function fetchData() {
+            Promise.all([
+                fetch(userUrl).then(res => res.json()),
+                fetch(EnrollmentsUrl).then(res => res.json()),
+                fetch(CoursesUrl).then(res => res.json())
+            ])
+                .then(([usersData, enrollmentsData, coursesData]) => {
+                    allUsers = usersData;
+                    allEnrollments = enrollmentsData;
+                    allCourses = coursesData;
 
-                const enrollmentsRes = await fetch('http://localhost:3000/Enrollments');
-                enrollments = await enrollmentsRes.json();
-
-                const coursesRes = await fetch('http://localhost:3000/Courses');
-                courses = await coursesRes.json();
-
-                populateDropdown();
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
+                    renderDropdown();
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                });
         }
 
-        function populateDropdown() {
-            const dropdown = document.getElementById('studentDropdown');
-            users.forEach(user => {
+        //Display User, Enrollments, Courses in Select------------------------------------------
+        function renderDropdown() {
+            allUsers.forEach(user => {
                 if (user.usertype.toLowerCase() === 'student') {
                     const option = document.createElement('option');
                     option.value = user.id;
@@ -52,22 +57,21 @@
                     dropdown.appendChild(option);
                 }
             });
-
-            // ✅ Attach the event listener AFTER populating
             dropdown.addEventListener('change', fetchEnrollments);
         }
 
+        //Display Enrolled Courses of Student----------------------------------------
         function fetchEnrollments() {
             const selectedUserId = document.getElementById('studentDropdown').value;
             const courseList = document.getElementById('courseList');
             courseList.innerHTML = '';
 
             if (selectedUserId) {
-                const enrolledCourses = enrollments.filter(enrollment => enrollment.userid == selectedUserId);
+                const enrolledCourses = allEnrollments.filter(enrollment => enrollment.userid == selectedUserId);
 
                 if (enrolledCourses.length > 0) {
                     enrolledCourses.forEach(enrollment => {
-                        const course = courses.find(c => c.id == enrollment.courseid);
+                        const course = allCourses.find(c => c.id == enrollment.courseid);
                         if (course) {
                             const li = document.createElement('li');
                             li.className = 'list-group-item';
@@ -86,5 +90,7 @@
 
         fetchData();
     })();
+
+    //END--------------------------------------------------------
 
 </script>

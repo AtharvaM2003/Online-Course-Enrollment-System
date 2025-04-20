@@ -34,16 +34,14 @@
         const enrollUrl = `${apiUrl}/Enrollments`;
         const courseUrl = `${apiUrl}/Courses`;
         const userUrl = `${apiUrl}/Users`;
-
         const tbody = document.getElementById("enrollmentBody");
         const searchInput = document.getElementById("enrollmentSearch");
-
         let allEnrollments = [];
-        let courseList = [];
-        let userList = [];
+        let allCourses = [];
+        let allUsers = [];
         let sortDirection = 1;
 
-        //------------------------------------------------------------------
+        //Searching------------------------------------------------------------------
 
         searchInput.addEventListener("input", () => {
             const query = searchInput.value.toLowerCase();
@@ -53,16 +51,17 @@
                 enroll.enrollmentdate.toLowerCase().includes(query)
 
             );
-            renderEnrollmentRows(filtered);
+            renderEnrollments(filtered);
         });
 
+        //Sorting-------------------------------------------------------------------
         document.querySelector("th:nth-child(2)").style.cursor = "pointer";
         document.querySelector("th:nth-child(2)").addEventListener("click", () => {
             const sorted = [...allEnrollments].sort((a, b) =>
                 a.courseName.localeCompare(b.courseName) * sortDirection
             );
             sortDirection *= -1;
-            renderEnrollmentRows(sorted);
+            renderEnrollments(sorted);
         });
 
         document.querySelector("th:nth-child(3)").style.cursor = "pointer";
@@ -71,7 +70,7 @@
                 a.studentName.localeCompare(b.studentName) * sortDirection
             );
             sortDirection *= -1;
-            renderEnrollmentRows(sorted);
+            renderEnrollments(sorted);
         });
         document.querySelector("th:nth-child(4)").style.cursor = "pointer";
         document.querySelector("th:nth-child(4)").addEventListener("click", () => {
@@ -79,11 +78,43 @@
                 a.enrollmentdate.localeCompare(b.enrollmentdate) * sortDirection
             );
             sortDirection *= -1;
-            renderEnrollmentRows(sorted);
+            renderEnrollments(sorted);
         });
-        //------------------------------------------------------------------
 
-        function renderEnrollmentRows(enrollments) {
+        //Fetch Enrollments----------------------------------------------------------------
+
+        function fetchEnrollments() {
+            Promise.all([
+                fetch(enrollUrl).then(res => res.json()),
+                fetch(courseUrl).then(res => res.json()),
+                fetch(userUrl).then(res => res.json())
+            ])
+                .then(([enrollData, courseData, userData]) => {
+                    allCourses = courseData;
+                    allUsers = userData;
+
+                    allEnrollments = enrollData.map(enroll => {
+                        const course = allCourses.find(c => c.id === enroll.courseid);
+                        const user = allUsers.find(u => u.id === enroll.userid);
+                        return {
+                            id: enroll.id,
+                            courseName: course ? course.title : "N/A",
+                            studentName: user ? user.name : "N/A",
+                            enrollmentdate: enroll.enrollmentdate
+                        };
+                    });
+
+                    renderEnrollments(allEnrollments);
+                })
+                .catch(err => {
+                    console.error("Error loading enrollment data:", err);
+                });
+        }
+        fetchEnrollments();
+
+        //Display Enrollments------------------------------------------------------------------
+
+        function renderEnrollments(enrollments) {
             tbody.innerHTML = "";
             enrollments.forEach(enroll => {
                 const tr = document.createElement("tr");
@@ -96,40 +127,7 @@
                 tbody.appendChild(tr);
             });
         }
-
-        function fetchEnrollmentData() {
-            fetch(enrollUrl)
-                .then(res => res.json())
-                .then(enrollData => {
-                    fetch(courseUrl)
-                        .then(res => res.json())
-                        .then(courseData => {
-                            fetch(userUrl)
-                                .then(res => res.json())
-                                .then(userData => {
-                                    courseList = courseData;
-                                    userList = userData;
-
-                                    allEnrollments = enrollData.map(enroll => {
-                                        const course = courseList.find(c => c.id === enroll.courseid);
-                                        const user = userList.find(u => u.id === enroll.userid);
-                                        return {
-                                            id: enroll.id,
-                                            courseName: course ? course.title : "N/A",
-                                            studentName: user ? user.name : "N/A",
-                                            enrollmentdate: enroll.enrollmentdate
-                                        };
-                                    });
-
-                                    renderEnrollmentRows(allEnrollments);
-                                });
-                        });
-                })
-                .catch(err => {
-                    console.error("Error loading enrollment data:", err);
-                });
-        }
-
-        fetchEnrollmentData();
     })();
+
+    //END--------------------------------------------------------------------
 </script>
