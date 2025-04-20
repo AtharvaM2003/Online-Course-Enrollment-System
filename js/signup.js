@@ -14,7 +14,7 @@ const togglePassword1 = document.getElementById('togglePassword1');
 let allEmail = [];
 let editId = null;
 
-//Show Password
+//Show Passwords-------------------------------------------------
 togglePassword.addEventListener('click', function () {
     const type = userPass.type === 'password' ? 'text' : 'password';
     userPass.type = type;
@@ -31,7 +31,7 @@ togglePassword1.addEventListener('click', function () {
     this.classList.toggle('fa-eye-slash');
 });
 
-
+//Validations-----------------------------------------------------------
 
 //Validating Username
 function validateUsername() {
@@ -96,7 +96,7 @@ function validateEmail() {
     }
 }
 
-
+//Validate Mobile
 function validateMobile() {
     const mobileRegex = /^[789]\d{9}$/;
     if (mobileRegex.test(userphone.value.trim())) {
@@ -110,6 +110,7 @@ function validateMobile() {
     }
 }
 
+//Validate Type
 function validateType() {
     if (userType.value) {
         userType.classList.add("is-valid");
@@ -122,7 +123,7 @@ function validateType() {
     }
 }
 
-
+//Check User Exists or not and Add--------------------------------------------------------------
 form.addEventListener("submit", function (e) {
     e.preventDefault();
     fetch(`${apiUrl}`)
@@ -150,10 +151,7 @@ form.addEventListener("submit", function (e) {
         });
 });
 
-
-
-
-
+//Add User-------------------------------------
 function addUser() {
     const users = {
         name: userName.value.trim(),
@@ -171,4 +169,6 @@ function addUser() {
     }).then(() => {
         alert("User Registered Successfully!");
     });
+
+    //END------------------------------------------------------------------
 }

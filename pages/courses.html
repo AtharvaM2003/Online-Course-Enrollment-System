@@ -1,6 +1,6 @@
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb p-3">
-        <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="#">Student</a></li>
         <li class="breadcrumb-item active" aria-current="page">Enroll Courses</li>
     </ol>
 </nav>
@@ -24,18 +24,18 @@
 
     <div class="row" id="courseList"></div>
 </div>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+
     (() => {
-        const apiBaseUrl = "http://localhost:3000";
+        const apiUrl = "http://localhost:3000";
         const courseList = document.getElementById('courseList');
         const searchBar = document.getElementById('searchBar');
         const priceFilter = document.getElementById('priceFilter');
 
-        let instructorList = [];
-        let allCourseList = [];
-        let userEnrolledCourseIds = [];
+        let allInstructors = [];
+        let allCourses = [];
+        let allEnrollmentIds = [];
 
         function getUserId() {
             return sessionStorage.getItem("userId");
@@ -45,52 +45,55 @@
             return sessionStorage.getItem("userName");
         }
 
-        async function loadEverything() {
-            try {
-                const [instructorResponse, courseResponse, enrollmentsResponse] = await Promise.all([
-                    fetch(`${apiBaseUrl}/Instructors`),
-                    fetch(`${apiBaseUrl}/Courses`),
-                    fetch(`${apiBaseUrl}/Enrollments?userid=${getUserId()}`)
-                ]);
+        function fetchData() {
+            Promise.all([
+                fetch(`${apiUrl}/Instructors`).then(res => res.json()),
+                fetch(`${apiUrl}/Courses`).then(res => res.json()),
+                fetch(`${apiUrl}/Enrollments?userid=${getUserId()}`).then(res => res.json())
+            ])
+                .then(([instructorsData, coursesData, enrollmentsData]) => {
+                    allInstructors = instructorsData;
+                    allCourses = coursesData;
+                    allEnrollmentIds = enrollmentsData.map(e => e.courseid);
 
-                instructorList = await instructorResponse.json();
-                allCourseList = await courseResponse.json();
-                const enrollmentsData = await enrollmentsResponse.json();
-                userEnrolledCourseIds = enrollmentsData.map(e => e.courseid);
-
-                renderCourses(allCourseList);
-            } catch (error) {
-                console.error('Error loading data:', error);
-            }
+                    renderCourses(allCourses);
+                })
+                .catch(error => {
+                    console.error('Error loading data:', error);
+                });
         }
 
-        function renderCourses(courseArray) {
+        //Display Courses in form of card-----------------------------------------------
+
+        function renderCourses(courses) {
             courseList.innerHTML = "";
-            courseArray.forEach(course => {
-                const instructor = instructorList.find(inst => inst.id === course.instructorid);
+            courses.forEach(course => {
+
+                const instructor = allInstructors.find(inst => inst.id === course.instructorid);
                 let instructorName = instructor ? instructor.name : "N/A";
 
+                //Dynamic Card-------------------------------------
                 const card = document.createElement('div');
                 card.className = "col-md-4 mb-4 course-card";
                 card.setAttribute('data-price', course.fees);
                 card.setAttribute('data-name', course.title);
                 card.innerHTML = `
-                    <div class="card shadow-sm h-100" style="cursor: pointer;">
-                        <div class="card-body d-flex flex-column">
-                            <h5 class="card-title">${course.title}</h5>
-                            <p class="card-text">${course.description}</p>
-                            <p><strong>Instructor:</strong> ${instructorName}</p>
-                            <p><strong>Price:</strong> ₹${course.fees}</p>
-                            <button class="btn mt-auto ${userEnrolledCourseIds.includes(course.id) ? 'btn-secondary' : 'btn-primary'}" 
-                                ${userEnrolledCourseIds.includes(course.id) ? 'disabled' : ''}>
-                                ${userEnrolledCourseIds.includes(course.id) ? 'Enrolled' : 'Enroll'}
-                            </button>
-                        </div>
+                <div class="card shadow-sm h-100" style="cursor: pointer;">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">${course.title}</h5>
+                        <p class="card-text">${course.description}</p>
+                        <p><strong>Instructor:</strong> ${instructorName}</p>
+                        <p><strong>Price:</strong> ₹${course.fees}</p>
+                        <button class="btn mt-auto ${allEnrollmentIds.includes(course.id) ? 'btn-secondary' : 'btn-primary'}" 
+                            ${allEnrollmentIds.includes(course.id) ? 'disabled' : ''}>
+                            ${allEnrollmentIds.includes(course.id) ? 'Enrolled' : 'Enroll'}
+                        </button>
                     </div>
-                `;
+                </div>
+            `;
 
                 const enrollButton = card.querySelector('button');
-                if (!userEnrolledCourseIds.includes(course.id)) {
+                if (!allEnrollmentIds.includes(course.id)) {
                     enrollButton.addEventListener('click', function () {
                         enrollInCourse(course.id, enrollButton);
                     });
@@ -100,8 +103,9 @@
             });
         }
 
+        //Enrollment Transaction-------------------------------------------
         function enrollInCourse(courseId, button) {
-            if (userEnrolledCourseIds.includes(courseId)) return;
+            if (allEnrollmentIds.includes(courseId)) return;
 
             const enrollmentData = {
                 userid: getUserId(),
@@ -109,14 +113,14 @@
                 enrollmentdate: new Date().toISOString().split('T')[0]
             };
 
-            fetch(`${apiBaseUrl}/Enrollments`, {
+            fetch(`${apiUrl}/Enrollments`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(enrollmentData)
             })
                 .then(response => {
                     if (response.ok) {
-                        userEnrolledCourseIds.push(courseId);
+                        allEnrollmentIds.push(courseId);
                         button.classList.remove('btn-primary');
                         button.classList.add('btn-secondary');
                         button.textContent = 'Enrolled';
@@ -132,7 +136,7 @@
                 });
         }
 
-        // Event listener for search
+        // Searching---------------------------------------------------------
         searchBar.addEventListener('input', () => {
             const query = searchBar.value.toLowerCase();
             document.querySelectorAll('.course-card').forEach(card => {
@@ -141,7 +145,7 @@
             });
         });
 
-        // Event listener for price filter
+        // Price filter------------------------------------------------------
         priceFilter.addEventListener('change', () => {
             const filter = priceFilter.value;
             let courseCards = [...document.querySelectorAll('.course-card')];
@@ -156,6 +160,7 @@
             courseCards.forEach(card => courseList.appendChild(card));
         });
 
-        loadEverything();
+        fetchData();
     })();
+    //END----------------------------------------------------------
 </script>

@@ -230,7 +230,7 @@
             const student = {
                 name: studentNameInput.value.trim(),
                 email: studentEmailInput.value.trim(),
-                phone: studentPhoneInput.value.trim(),
+                phone: String(studentPhoneInput.value.trim()),
                 password: studentPassInput.value.trim(),
                 usertype: "student"
 

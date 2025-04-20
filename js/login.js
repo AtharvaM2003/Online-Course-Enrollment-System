@@ -5,6 +5,7 @@ document.getElementById("loginForm").addEventListener("submit", function (e) {
 const passwordInput = document.getElementById('password');
 const togglePassword = document.getElementById('togglePassword');
 
+//Show Password--------------------------------------------------------
 togglePassword.addEventListener('click', function () {
     const type = passwordInput.type === 'password' ? 'text' : 'password';
     passwordInput.type = type;
@@ -13,6 +14,7 @@ togglePassword.addEventListener('click', function () {
     this.classList.toggle('fa-eye-slash');
 });
 
+//Authenticate through Session Storage----------------------------------------------------------
 function verify() {
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
@@ -52,10 +54,4 @@ function getUserName() {
 
 function getUserType() {
     return sessionStorage.getItem("userType");
-}
-
-function logout() {
-    sessionStorage.clear();
-    sessionStorage.setItem("loggedOut", "true");
-    window.location.href = "login.html";
 }

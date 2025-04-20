@@ -5,8 +5,6 @@ function loadPage(page) {
         .then(data => {
             const container = document.getElementById('main-content');
             container.innerHTML = data;
-
-
             const scripts = container.querySelectorAll('script');
             scripts.forEach(script => {
                 const newScript = document.createElement('script');
@@ -18,10 +16,9 @@ function loadPage(page) {
                 document.body.appendChild(newScript);
                 script.remove();
             });
-
             setTimeout(() => {
                 if (page === "admin-dashboard.html") {
-                    loadDashboardCharts();
+                    renderAdminDashboardCharts();
                 } else if (page === "student-dashboard.html") {
                     renderStudentDashboardCharts();
                 }
@@ -35,12 +32,14 @@ function loadPage(page) {
 }
 
 
-function loadDashboardCharts() {
+function renderAdminDashboardCharts() {
 
     const apiUrl = "http://localhost:3000";
     const courseUrl = `${apiUrl}/Courses`;
     const instructorUrl = `${apiUrl}/Instructors`;
     const enrollUrl = `${apiUrl}/Enrollments`;
+
+    //Fetch Course wise Enrollments--------------------------------------
     function renderPopularCoursesChart() {
         Promise.all([
             fetch(courseUrl),
@@ -52,11 +51,11 @@ function loadDashboardCharts() {
                 enrollRes.json(),
                 instructorRes.json()
             ]))
-            .then(([courseData, enrollData, instructorData]) => {
-                const enrollCountMap = {};
+            .then(([courseData, enrollData]) => {
+                const enrollCountObj = {};
                 enrollData.forEach(enroll => {
                     const cid = enroll.courseid;
-                    enrollCountMap[cid] = (enrollCountMap[cid] || 0) + 1;
+                    enrollCountObj[cid] = (enrollCountObj[cid] || 0) + 1;
                 });
 
                 const labels = [];
@@ -64,9 +63,10 @@ function loadDashboardCharts() {
 
                 courseData.forEach(course => {
                     labels.push(course.title);
-                    data.push(enrollCountMap[course.id] || 0);
+                    data.push(enrollCountObj[course.id] || 0);
                 });
 
+                //Dynamic Bar Chart---------------------------------------------
                 const ctx1 = document.getElementById('courseBarChart')?.getContext('2d');
                 if (ctx1) {
                     new Chart(ctx1, {
@@ -102,36 +102,26 @@ function loadDashboardCharts() {
             });
     }
     renderPopularCoursesChart();
-    let instructors = [];
 
-    function loadInstructors() {
-        fetch(instructorUrl)
-            .then(res => res.json())
-            .then(data => {
-                instructors = data;
 
-                renderStudentsPerInstructorChart();
-            })
-            .catch(error => {
-                console.error("Error loading instructors:", error);
-            });
-    }
-    loadInstructors();
-
+    //Fetch Enrollments, Course, Instructor----------------------
     function renderStudentsPerInstructorChart() {
         Promise.all([
             fetch(enrollUrl),
-            fetch(courseUrl)
+            fetch(courseUrl),
+            fetch(instructorUrl)
         ])
-            .then(([enrollRes, courseRes]) => Promise.all([
+            .then(([enrollRes, courseRes, instructorRes]) => Promise.all([
                 enrollRes.json(),
-                courseRes.json()
+                courseRes.json(),
+                instructorRes.json()
             ]))
-            .then(([enrollData, courseData]) => {
+            .then(([enrollData, courseData, instructorData]) => {
                 const courseInstructorMap = {};
                 courseData.forEach(course => {
                     courseInstructorMap[course.id] = course.instructorid;
                 });
+                allInstructors = instructorData;
 
                 const instructorStudentCount = {};
                 enrollData.forEach(enroll => {
@@ -145,13 +135,13 @@ function loadDashboardCharts() {
                 const labels = [];
                 const data = [];
 
-                instructors.forEach(instructor => {
+                allInstructors.forEach(instructor => {
                     const name = instructor.name;
                     labels.push(name);
                     data.push(instructorStudentCount[instructor.id] || 0);
                 });
 
-                // Render Pie Chart
+                // Dynamic Pie Chart
                 const ctx2 = document.getElementById('instructorPieChart')?.getContext('2d');
                 if (ctx2) {
                     new Chart(ctx2, {
@@ -180,6 +170,8 @@ function loadDashboardCharts() {
             });
     }
 
+    renderStudentsPerInstructorChart();
+
 }
 
 // Student Dashboard Chart 
@@ -202,15 +194,15 @@ function renderStudentDashboardCharts() {
                 ])
             )
             .then(([courseData, enrollData]) => {
-                const enrollCountMap = {};
+                const enrollCountObj = {};
                 enrollData.forEach(enroll => {
                     const cid = enroll.courseid;
-                    enrollCountMap[cid] = (enrollCountMap[cid] || 0) + 1;
+                    enrollCountObj[cid] = (enrollCountObj[cid] || 0) + 1;
                 });
 
                 const coursesWithEnroll = courseData.map(course => ({
                     title: course.title,
-                    enrollCount: enrollCountMap[course.id] || 0
+                    enrollCount: enrollCountObj[course.id] || 0
                 }));
 
                 coursesWithEnroll.sort((a, b) => b.enrollCount - a.enrollCount);

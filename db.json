@@ -21,7 +21,7 @@
       "name": "Raj",
       "email": "raj@gmail.com",
       "password": "raj@123",
-      "phone": 7654321098,
+      "phone": "7654321098",
       "usertype": "admin"
     },
     {
@@ -29,7 +29,7 @@
       "name": "Neha",
       "email": "neha@gmail.com",
       "password": "neha@123",
-      "phone": 9988776655,
+      "phone": "9988776655",
       "usertype": "admin"
     },
     {
@@ -37,7 +37,7 @@
       "name": "Amit",
       "email": "amit@gmail.com",
       "password": "amit@123",
-      "phone": 9123456780,
+      "phone": "9123456780",
       "usertype": "admin"
     },
     {
@@ -45,7 +45,7 @@
       "name": "Priya",
       "email": "priya@gmail.com",
       "password": "priya@123",
-      "phone": 9212345678,
+      "phone": "9212345678",
       "usertype": "student"
     },
     {
@@ -61,7 +61,7 @@
       "name": "Sana",
       "email": "sana@gmail.com",
       "password": "sana@123",
-      "phone": 9456789012,
+      "phone": "9456789012",
       "usertype": "student"
     },
     {

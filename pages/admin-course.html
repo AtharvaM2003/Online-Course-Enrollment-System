@@ -279,7 +279,7 @@
                 title: titleInput.value.trim(),
                 description: descriptionInput.value.trim(),
                 instructorid: instructorInput.value,
-                fees: parseInt(feeInput.value)
+                fees: String(feeInput.value)
             };
 
             fetch(`${apiUrl}/Courses/${editId}`, {
