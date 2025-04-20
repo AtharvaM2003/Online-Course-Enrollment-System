@@ -29,9 +29,12 @@
                 <input type="tel" class="form-control" id="adminPhone" value="">
             </div>
 
-            <div class="mb-3">
+            <div class="mb-3" style="position: relative;">
                 <label for="adminPassword" class="form-label">Password</label>
                 <input type="password" class="form-control" id="adminPassword" placeholder="">
+                <i id="togglePassword" class="fa-solid fa-eye"
+                    style="position: absolute; top: 60%; right: 15px;  cursor: pointer; ">
+                </i>
             </div>
 
             <div class="d-grid">
@@ -50,6 +53,17 @@
         const adminPassInput = document.getElementById("adminPassword");
         const apiUrl = "http://localhost:3000";
         const form = document.querySelector("form");
+        const togglePassword = document.getElementById('togglePassword');
+
+        //Show Password
+        togglePassword.addEventListener('click', function () {
+            const type = adminPassInput.type === 'password' ? 'text' : 'password';
+            adminPassInput.type = type;
+
+            this.classList.toggle('fa-eye');
+            this.classList.toggle('fa-eye-slash');
+        });
+
 
         //----------------------------------------------------------------------
         function loadAdminForEdit() {

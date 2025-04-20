@@ -1,9 +1,135 @@
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="#" onclick="loadPage('admin-enrollments.html')">Menu</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Enrollments</li>
+        <li class="breadcrumb-item">
+            <a href="#" onclick="loadPage('admin-dashboard.html')">Reports</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Enrollment Report</li>
     </ol>
 </nav>
 
-<h2>Course Enrolled </h2>
-<p>This is course enrolled by student in admin</p>
+<h2 class="mb-3">Enrollment Report</h2>
+
+<div class="mb-3">
+    <input type="text" id="enrollmentSearch" class="form-control mb-3"
+        placeholder="Search by Course or Student Name...">
+</div>
+
+<div class="table-responsive">
+    <table class="table table-bordered align-middle">
+        <thead class="table-light">
+            <tr>
+                <th>Enrollment ID</th>
+                <th>Course Name</th>
+                <th>Student Name</th>
+                <th>Date of Enrollment</th>
+            </tr>
+        </thead>
+        <tbody id="enrollmentBody"></tbody>
+    </table>
+</div>
+
+<script>
+    (() => {
+        const apiUrl = "http://localhost:3000";
+        const enrollUrl = `${apiUrl}/Enrollments`;
+        const courseUrl = `${apiUrl}/Courses`;
+        const userUrl = `${apiUrl}/Users`;
+
+        const tbody = document.getElementById("enrollmentBody");
+        const searchInput = document.getElementById("enrollmentSearch");
+
+        let allEnrollments = [];
+        let courseList = [];
+        let userList = [];
+        let sortDirection = 1;
+
+        //------------------------------------------------------------------
+
+        searchInput.addEventListener("input", () => {
+            const query = searchInput.value.toLowerCase();
+            const filtered = allEnrollments.filter(enroll =>
+                enroll.courseName.toLowerCase().includes(query) ||
+                enroll.studentName.toLowerCase().includes(query) ||
+                enroll.enrollmentdate.toLowerCase().includes(query)
+
+            );
+            renderEnrollmentRows(filtered);
+        });
+
+        document.querySelector("th:nth-child(2)").style.cursor = "pointer";
+        document.querySelector("th:nth-child(2)").addEventListener("click", () => {
+            const sorted = [...allEnrollments].sort((a, b) =>
+                a.courseName.localeCompare(b.courseName) * sortDirection
+            );
+            sortDirection *= -1;
+            renderEnrollmentRows(sorted);
+        });
+
+        document.querySelector("th:nth-child(3)").style.cursor = "pointer";
+        document.querySelector("th:nth-child(3)").addEventListener("click", () => {
+            const sorted = [...allEnrollments].sort((a, b) =>
+                a.studentName.localeCompare(b.studentName) * sortDirection
+            );
+            sortDirection *= -1;
+            renderEnrollmentRows(sorted);
+        });
+        document.querySelector("th:nth-child(4)").style.cursor = "pointer";
+        document.querySelector("th:nth-child(4)").addEventListener("click", () => {
+            const sorted = [...allEnrollments].sort((a, b) =>
+                a.enrollmentdate.localeCompare(b.enrollmentdate) * sortDirection
+            );
+            sortDirection *= -1;
+            renderEnrollmentRows(sorted);
+        });
+        //------------------------------------------------------------------
+
+        function renderEnrollmentRows(enrollments) {
+            tbody.innerHTML = "";
+            enrollments.forEach(enroll => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td>${enroll.id}</td>
+                    <td>${enroll.courseName}</td>
+                    <td>${enroll.studentName}</td>
+                    <td>${enroll.enrollmentdate}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function fetchEnrollmentData() {
+            fetch(enrollUrl)
+                .then(res => res.json())
+                .then(enrollData => {
+                    fetch(courseUrl)
+                        .then(res => res.json())
+                        .then(courseData => {
+                            fetch(userUrl)
+                                .then(res => res.json())
+                                .then(userData => {
+                                    courseList = courseData;
+                                    userList = userData;
+
+                                    allEnrollments = enrollData.map(enroll => {
+                                        const course = courseList.find(c => c.id === enroll.courseid);
+                                        const user = userList.find(u => u.id === enroll.userid);
+                                        return {
+                                            id: enroll.id,
+                                            courseName: course ? course.title : "N/A",
+                                            studentName: user ? user.name : "N/A",
+                                            enrollmentdate: enroll.enrollmentdate
+                                        };
+                                    });
+
+                                    renderEnrollmentRows(allEnrollments);
+                                });
+                        });
+                })
+                .catch(err => {
+                    console.error("Error loading enrollment data:", err);
+                });
+        }
+
+        fetchEnrollmentData();
+    })();
+</script>

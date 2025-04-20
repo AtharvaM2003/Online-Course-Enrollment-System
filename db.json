@@ -76,7 +76,7 @@
       "name": "Kiran",
       "email": "kiran@gmail.com",
       "phone": "9678901222",
-      "password": "kiran@123",
+      "password": "Kiran@123",
       "usertype": "student",
       "id": "10"
     },
@@ -93,7 +93,7 @@
     {
       "title": "Python Programming",
       "description": "Learn Python from scratch.",
-      "instructorid": "1",
+      "instructorid": "4",
       "fees": 9000,
       "id": "1"
     },
@@ -210,7 +210,7 @@
       "expertise": "Mobile Dev"
     },
     {
-      "id": "b9ea",
+      "id": "9",
       "name": "Mr. Atharva Mundhe",
       "expertise": "Java Script"
     }
@@ -304,6 +304,48 @@
       "id": "7aa6",
       "userid": "ca67",
       "courseid": "9c45",
+      "enrollmentdate": "2025-04-20"
+    },
+    {
+      "id": "9a6e",
+      "userid": "ca67",
+      "courseid": "8",
+      "enrollmentdate": "2025-04-20"
+    },
+    {
+      "id": "69e1",
+      "userid": "ca67",
+      "courseid": "2",
+      "enrollmentdate": "2025-04-20"
+    },
+    {
+      "id": "3fe5",
+      "userid": "ca67",
+      "courseid": "5",
+      "enrollmentdate": "2025-04-20"
+    },
+    {
+      "id": "3992",
+      "userid": "ca67",
+      "courseid": "9",
+      "enrollmentdate": "2025-04-20"
+    },
+    {
+      "id": "7f90",
+      "userid": "10",
+      "courseid": "2",
+      "enrollmentdate": "2025-04-20"
+    },
+    {
+      "id": "fc07",
+      "userid": "10",
+      "courseid": "4",
+      "enrollmentdate": "2025-04-20"
+    },
+    {
+      "id": "7f2a",
+      "userid": "10",
+      "courseid": "1",
       "enrollmentdate": "2025-04-20"
     }
   ]

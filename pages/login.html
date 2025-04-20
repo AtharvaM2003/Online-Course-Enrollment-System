@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login | MindSpark</title>
     <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
 </head>
 
 <body class="bg-light">
@@ -21,10 +23,13 @@
                             <input type="email" class="form-control" id="email" placeholder="Enter your email" required>
                         </div>
 
-                        <div class="mb-3">
+                        <div class="mb-3" style="position: relative;">
                             <label for="password" class="form-label">Password</label>
                             <input type="password" class="form-control" id="password" placeholder="Enter password"
                                 required>
+                            <i id="togglePassword" class="fa-solid fa-eye"
+                                style="position: absolute; top: 60%; right: 15px;  cursor: pointer; ">
+                            </i>
                         </div>
 
                         <div id="error" class="text-danger mt-2 text-center"></div>

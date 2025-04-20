@@ -64,7 +64,6 @@
 <script>
     (() => {
         const apiUrl = "http://localhost:3000/Instructors";
-        let allInstructors = [];
         const instuctorNameInput = document.getElementById("instructorName");
         const instructorExpertiseInput = document.getElementById("expertise");
         const submit = document.getElementById("submitBtn");
@@ -73,8 +72,9 @@
         const cgbtn = document.getElementById("chbtn");
         let editId = null;
         let sortDirection = 1;
+        let allInstructors = [];
 
-        // Search bar setup
+        // Search bar setup------------------------------------------------------
         searchInput.setAttribute("type", "text");
         searchInput.setAttribute("placeholder", "Search by Instructor Name...");
         searchInput.classList.add("form-control", "mb-3");
@@ -89,7 +89,7 @@
             renderInstructors(filtered);
         });
 
-        //---------------------------------------------------------------------------
+        //Validations---------------------------------------------------------------------------
 
         function validateName() {
             if (instuctorNameInput.value.trim().length >= 5) {
@@ -114,9 +114,13 @@
                 return false;
             }
         }
+        function clearValidation() {
+            instuctorNameInput.classList.remove("is-invalid");
+            instructorExpertiseInput.classList.remove("is-invalid");
 
+        }
 
-        //----------------------------------------------------------------------------
+        //Sorting----------------------------------------------------------------------------
         document.querySelector("th:nth-child(2)").style.cursor = "pointer";
         document.querySelector("th:nth-child(2)").addEventListener("click", () => {
             const sorted = [...allInstructors].sort((a, b) =>
@@ -141,7 +145,7 @@
             sortDirection *= -1;
             renderInstructors(sorted);
         });
-        //----------------------------------------------------------------------------
+        //Add & Edit instructor----------------------------------------------------------------------------
         form.addEventListener("submit", function (e) {
             e.preventDefault();
             if (!validateExpertise() & !validateName()) return;
@@ -161,7 +165,7 @@
                     form.reset();
                     editId = null;
                     submitBtn.textContent = "Add Instructor";
-                    // clearValidation();
+                    clearValidation();
                 });
             } else {
                 fetch(apiUrl, {
@@ -171,22 +175,35 @@
                 }).then(() => {
                     fetchAndRenderInstructors();
                     form.reset();
-                    // clearValidation();
+                    clearValidation();
                 });
             }
         });
 
-        //----------------------------------------------------------------------------
+        //Delete Instructor----------------------------------------------------------------------------
+        function getPage() {
+            return sessionStorage.getItem("currentPage");
+        }
 
         function deleteInstructor(id) {
             console.log("ID Received " + id);
-            if (confirm("Are you want to delete this instructor ?")) {
+            if (confirm("Are you sure you want to delete this instructor?")) {
                 fetch(`${apiUrl}/${id}`, {
                     method: "DELETE"
-                }).then(() => fetchAndRenderInstructors());
+                })
+                    .then(() => {
+
+                        loadPage(getPage());
+                    })
+                    .catch(error => {
+                        console.error("Error deleting instructor:", error);
+                        alert("An error occurred while deleting the instructor.");
+                    });
             }
         }
-        //----------------------------------------------------------------------------
+
+
+        //Set Fields for edit----------------------------------------------------------------------------
         function loadInstructorForEdit(id) {
             fetch(`${apiUrl}/${id}`)
                 .then(res => res.json())
@@ -202,7 +219,7 @@
         }
 
 
-        //----------------------------------------------------------------------------
+        //Fetch Instructor----------------------------------------------------------------------------
         function fetchAndRenderInstructors() {
             fetch(apiUrl)
                 .then(res => res.json())
@@ -211,7 +228,7 @@
                     renderInstructors(data);
                 });
         }
-        //-----------------------------------------------------------------------------
+        //Display Instructor in table-----------------------------------------------------------------------------
         function renderInstructors(instructors) {
             const tbody = document.getElementById("instructorTableBody");
             tbody.innerHTML = "";
@@ -246,7 +263,8 @@
             });
         }
         fetchAndRenderInstructors();
+
     })();
 
-    //------------------------------------------------------------------------------
+    //End------------------------------------------------------------------------------
 </script>

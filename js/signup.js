@@ -8,8 +8,29 @@ const userPass = document.getElementById("userPassword");
 const userCPass = document.getElementById("userCPassword");
 const userType = document.getElementById("role");
 const submit = document.getElementById("submitBtn");
+const togglePassword = document.getElementById('togglePassword');
+const togglePassword1 = document.getElementById('togglePassword1');
+
 let allEmail = [];
 let editId = null;
+
+//Show Password
+togglePassword.addEventListener('click', function () {
+    const type = userPass.type === 'password' ? 'text' : 'password';
+    userPass.type = type;
+
+    this.classList.toggle('fa-eye');
+    this.classList.toggle('fa-eye-slash');
+});
+
+togglePassword1.addEventListener('click', function () {
+    const type = userCPass.type === 'password' ? 'text' : 'password';
+    userCPass.type = type;
+
+    this.classList.toggle('fa-eye');
+    this.classList.toggle('fa-eye-slash');
+});
+
 
 
 //Validating Username

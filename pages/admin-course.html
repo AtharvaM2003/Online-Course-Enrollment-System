@@ -79,8 +79,9 @@
         let editId = null;
         let sortDirection = 1;
         let instructors = [];
-        const apiUrl = "http://localhost:3000";
         let allCourses = [];
+
+        const apiUrl = "http://localhost:3000";
         const courseForm = document.getElementById("courseForm");
         const titleInput = document.getElementById("courseTitle");
         const descriptionInput = document.getElementById("courseDescription");
@@ -89,6 +90,7 @@
         const submitBtn = document.getElementById("submit");
         let searchInput = document.createElement("input");
 
+        //Validations-------------------------------------------------------
         function validateCourseName() {
             let isValid = true;
             if (titleInput.value.trim().length < 5) {
@@ -132,7 +134,7 @@
             }
             return isValid;
         }
-
+        //Sorting--------------------------------------------------------------------
         document.querySelector("th:nth-child(2)").style.cursor = "pointer";
         document.querySelector("th:nth-child(2)").addEventListener("click", () => {
             const sorted = [...allCourses].sort((a, b) => a.title.localeCompare(b.title) * sortDirection);
@@ -160,22 +162,21 @@
             renderCourses(sorted);
         });
 
+        //Searching-------------------------------------------------------------------------------------
         searchInput.setAttribute("type", "text");
         searchInput.setAttribute("placeholder", "Search Instructors...");
         searchInput.classList.add("form-control", "mb-3");
         document.querySelector(".table").parentNode.insertBefore(searchInput, document.querySelector(".table"));
-
         searchInput.addEventListener("input", () => {
-
             const searchTerm = searchInput.value.toLowerCase();
             let filtered = allCourses.filter(c => c.title.toLowerCase().includes(searchTerm) ||
                 c.description.toLowerCase().includes(searchTerm) ||
-
                 String(c.fees).toLowerCase().includes(String(searchTerm))
             );
             renderCourses(filtered);
         });
 
+        //Load Instructor for Drop down and also Displaying name---------------------------------
         function loadInstructors() {
             fetch(`${apiUrl}/Instructors`)
                 .then(res => res.json())
@@ -189,6 +190,7 @@
         }
         loadInstructors();
 
+        //Fetch Course------------------------------------------------------------
         function fetchAndRenderCourses() {
             fetch(`${apiUrl}/Courses`)
                 .then(res => res.json())
@@ -198,6 +200,7 @@
                 });
         }
 
+        //Display Courses---------------------------------------------------
         function renderCourses(courses) {
             const tbody = document.getElementById("courseTableBody");
             tbody.innerHTML = "";
@@ -236,18 +239,20 @@
         }
         fetchAndRenderCourses();
 
-
+        //Add & Edit Courses--------------------------------------------------------
         courseForm.addEventListener("submit", function (e) {
             e.preventDefault();
             if (validateCourseName() & validateCourseDesc() & validateInstructor() & validateFees()) {
                 if (editId) {
                     updateCourse();
+                    loadPage(sessionStorage.getItem('currentPage'));
                 } else {
                     addCourse();
+                    loadPage(sessionStorage.getItem('currentPage'));
                 }
             }
         });
-
+        //Add----------------------------------------
         function addCourse() {
             const newCourse = {
                 title: titleInput.value.trim(),
@@ -267,29 +272,8 @@
             });
         }
 
-        function clearValidation() {
-            titleInput.classList.remove("is-invalid");
-            descriptionInput.classList.remove("is-invalid");
-            instructorInput.classList.remove("is-invalid");
-            feeInput.classList.remove("is-invalid");
-        }
 
-        function loadCourseForEdit(id) {
-            fetch(`${apiUrl}/Courses/${id}`)
-                .then(response => response.json())
-                .then(data => {
-                    titleInput.value = data.title;
-                    descriptionInput.value = data.description;
-                    instructorInput.value = data.instructorid;
-                    feeInput.value = data.fees;
-
-                    editId = id;
-                    submitBtn.textContent = "Update Course";
-                    const myModal = new bootstrap.Modal(document.getElementById('addCourseModal'));
-                    myModal.show();
-                });
-        }
-
+        //Edit---------------------------------------------
         function updateCourse() {
             const updatedCourse = {
                 title: titleInput.value.trim(),
@@ -316,6 +300,7 @@
             loadInstructors();
         }
 
+        //Delete--------------------------------------------
         function deleteCourse(id) {
             if (confirm("Are you sure you want to delete this course?")) {
                 fetch(`${apiUrl}/Courses/${id}`, {
@@ -325,5 +310,31 @@
         }
 
 
+
+        //Clear Validations-----------------------------------------------
+        function clearValidation() {
+            titleInput.classList.remove("is-invalid");
+            descriptionInput.classList.remove("is-invalid");
+            instructorInput.classList.remove("is-invalid");
+            feeInput.classList.remove("is-invalid");
+        }
+
+        //Set Fields to Edit------------------------------------------------
+        function loadCourseForEdit(id) {
+            fetch(`${apiUrl}/Courses/${id}`)
+                .then(response => response.json())
+                .then(data => {
+                    titleInput.value = data.title;
+                    descriptionInput.value = data.description;
+                    instructorInput.value = data.instructorid;
+                    feeInput.value = data.fees;
+
+                    editId = id;
+                    submitBtn.textContent = "Update Course";
+                    const myModal = new bootstrap.Modal(document.getElementById('addCourseModal'));
+                    myModal.show();
+                });
+        }
+        //END-----------------------------------------
     })();
 </script>

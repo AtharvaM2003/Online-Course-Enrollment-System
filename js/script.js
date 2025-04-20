@@ -1,4 +1,4 @@
-// Load Page Function - Handles dynamic content loading and script execution
+
 function loadPage(page) {
     fetch(`pages/${page}`)
         .then(response => response.text())
@@ -6,7 +6,7 @@ function loadPage(page) {
             const container = document.getElementById('main-content');
             container.innerHTML = data;
 
-            // Extract and execute inline/external scripts
+
             const scripts = container.querySelectorAll('script');
             scripts.forEach(script => {
                 const newScript = document.createElement('script');
@@ -19,10 +19,9 @@ function loadPage(page) {
                 script.remove();
             });
 
-            // Load charts only for specific pages
             setTimeout(() => {
                 if (page === "admin-dashboard.html") {
-                    // loadDashboardCharts();
+                    loadDashboardCharts();
                 } else if (page === "student-dashboard.html") {
                     renderStudentDashboardCharts();
                 }
@@ -35,78 +34,229 @@ function loadPage(page) {
         });
 }
 
-// Admin Dashboard Chart Function
+
 function loadDashboardCharts() {
-    // Bar Chart
-    const ctx1 = document.getElementById('courseBarChart')?.getContext('2d');
-    if (ctx1) {
-        new Chart(ctx1, {
-            type: 'bar',
-            data: {
-                labels: ['Python', 'Web Dev', 'Data Science', 'ML'],
-                datasets: [{
-                    label: 'Students',
-                    data: [300, 250, 200, 180],
-                    backgroundColor: ['#0d6efd', '#198754', '#ffc107', '#dc3545']
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: { legend: { display: false } },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: { stepSize: 50 }
-                    }
+
+    const apiUrl = "http://localhost:3000";
+    const courseUrl = `${apiUrl}/Courses`;
+    const instructorUrl = `${apiUrl}/Instructors`;
+    const enrollUrl = `${apiUrl}/Enrollments`;
+    function renderPopularCoursesChart() {
+        Promise.all([
+            fetch(courseUrl),
+            fetch(enrollUrl),
+            fetch(instructorUrl)
+        ])
+            .then(([courseRes, enrollRes, instructorRes]) => Promise.all([
+                courseRes.json(),
+                enrollRes.json(),
+                instructorRes.json()
+            ]))
+            .then(([courseData, enrollData, instructorData]) => {
+                const enrollCountMap = {};
+                enrollData.forEach(enroll => {
+                    const cid = enroll.courseid;
+                    enrollCountMap[cid] = (enrollCountMap[cid] || 0) + 1;
+                });
+
+                const labels = [];
+                const data = [];
+
+                courseData.forEach(course => {
+                    labels.push(course.title);
+                    data.push(enrollCountMap[course.id] || 0);
+                });
+
+                const ctx1 = document.getElementById('courseBarChart')?.getContext('2d');
+                if (ctx1) {
+                    new Chart(ctx1, {
+                        type: 'bar',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Students',
+                                data: data,
+                                backgroundColor: [
+                                    '#0d6efd', '#198754', '#ffc107', '#dc3545', '#6f42c1', '#20c997', '#fd7e14'
+                                ],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: { display: false }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: { stepSize: 1 }
+                                }
+                            }
+                        }
+                    });
                 }
-            }
-        });
+            })
+            .catch(error => {
+                console.error("Error loading chart data:", error);
+            });
+    }
+    renderPopularCoursesChart();
+    let instructors = [];
+
+    function loadInstructors() {
+        fetch(instructorUrl)
+            .then(res => res.json())
+            .then(data => {
+                instructors = data;
+
+                renderStudentsPerInstructorChart();
+            })
+            .catch(error => {
+                console.error("Error loading instructors:", error);
+            });
+    }
+    loadInstructors();
+
+    function renderStudentsPerInstructorChart() {
+        Promise.all([
+            fetch(enrollUrl),
+            fetch(courseUrl)
+        ])
+            .then(([enrollRes, courseRes]) => Promise.all([
+                enrollRes.json(),
+                courseRes.json()
+            ]))
+            .then(([enrollData, courseData]) => {
+                const courseInstructorMap = {};
+                courseData.forEach(course => {
+                    courseInstructorMap[course.id] = course.instructorid;
+                });
+
+                const instructorStudentCount = {};
+                enrollData.forEach(enroll => {
+                    const courseId = enroll.courseid;
+                    const instructorId = courseInstructorMap[courseId];
+                    if (instructorId) {
+                        instructorStudentCount[instructorId] = (instructorStudentCount[instructorId] || 0) + 1;
+                    }
+                });
+
+                const labels = [];
+                const data = [];
+
+                instructors.forEach(instructor => {
+                    const name = instructor.name;
+                    labels.push(name);
+                    data.push(instructorStudentCount[instructor.id] || 0);
+                });
+
+                // Render Pie Chart
+                const ctx2 = document.getElementById('instructorPieChart')?.getContext('2d');
+                if (ctx2) {
+                    new Chart(ctx2, {
+                        type: 'pie',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                data: data,
+                                backgroundColor: [
+                                    '#0dcaf0', '#6c757d', '#ffc107', '#198754', '#dc3545',
+                                    '#6610f2', '#d63384', '#fd7e14', '#20c997', '#0d6efd'
+                                ]
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: { position: 'bottom' }
+                            }
+                        }
+                    });
+                }
+            })
+            .catch(error => {
+                console.error("Error loading students per instructor chart:", error);
+            });
     }
 
-    // Pie Chart
-    const ctx2 = document.getElementById('instructorPieChart')?.getContext('2d');
-    if (ctx2) {
-        new Chart(ctx2, {
-            type: 'pie',
-            data: {
-                labels: ['Assigned', 'Unassigned'],
-                datasets: [{
-                    data: [12, 3],
-                    backgroundColor: ['#0dcaf0', '#6c757d']
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: { legend: { position: 'bottom' } }
-            }
-        });
-    }
 }
 
-// Student Dashboard Chart Function
+// Student Dashboard Chart 
 function renderStudentDashboardCharts() {
-    const ctx2 = document.getElementById('enrollmentChart')?.getContext('2d');
-    if (!ctx2) return;
+    const apiUrl = "http://localhost:3000";
+    const courseUrl = `${apiUrl}/Courses`;
+    const instructorUrl = `${apiUrl}/Instructors`;
+    const enrollUrl = `${apiUrl}/Enrollments`;
+    function loadTopCoursesChart() {
+        Promise.all([
+            fetch(courseUrl),
+            fetch(enrollUrl),
+            fetch(instructorUrl)
+        ])
+            .then(([courseRes, enrollRes, instructorRes]) =>
+                Promise.all([
+                    courseRes.json(),
+                    enrollRes.json(),
+                    instructorRes.json()
+                ])
+            )
+            .then(([courseData, enrollData]) => {
+                const enrollCountMap = {};
+                enrollData.forEach(enroll => {
+                    const cid = enroll.courseid;
+                    enrollCountMap[cid] = (enrollCountMap[cid] || 0) + 1;
+                });
 
-    new Chart(ctx2, {
-        type: 'bar',
-        data: {
-            labels: ['Python Programming', 'Web Development', 'Machine Learning'],
-            datasets: [{
-                label: 'Enrollments',
-                data: [1200, 950, 800],
-                backgroundColor: ['#198754', '#ffc107', '#dc3545'],
-                borderColor: ['#999', '#bbb', '#777'],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                y: { beginAtZero: true }
-            }
-        }
-    });
+                const coursesWithEnroll = courseData.map(course => ({
+                    title: course.title,
+                    enrollCount: enrollCountMap[course.id] || 0
+                }));
+
+                coursesWithEnroll.sort((a, b) => b.enrollCount - a.enrollCount);
+
+                const topCourses = coursesWithEnroll.slice(0, 5);
+
+                const labels = topCourses.map(c => c.title);
+                const data = topCourses.map(c => c.enrollCount);
+
+                const ctx1 = document.getElementById('popularCourse')?.getContext('2d');
+                if (ctx1) {
+                    new Chart(ctx1, {
+                        type: 'bar',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Students',
+                                data: data,
+                                backgroundColor: [
+                                    '#0d6efd', '#198754', '#ffc107', '#dc3545', '#6f42c1'
+                                ],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: { legend: { display: false } },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: { stepSize: 1 }
+                                }
+                            }
+                        }
+                    });
+                }
+            })
+            .catch(error => {
+                console.error("Error loading top courses chart:", error);
+            });
+    }
+
+
+    loadTopCoursesChart();
+
+
 }
 
 document.addEventListener("DOMContentLoaded", function () {

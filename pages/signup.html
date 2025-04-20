@@ -42,16 +42,22 @@
                     <div class="invalid-feedback">Enter Valid Phone </div>
                 </div>
 
-                <div class="mb-3">
+                <div class="mb-3" style="position: relative;">
                     <label for="userPassword" class="form-label">Password</label>
                     <input type="password" class="form-control" id="userPassword" placeholder="Create a password"
                         required />
+                    <i id="togglePassword" class="fa-solid fa-eye"
+                        style="position: absolute; top: 60%; right: 15px;  cursor: pointer; ">
+                    </i>
                     <div class="invalid-feedback">Enter Valid Password</div>
                 </div>
-                <div class="mb-3">
+                <div class="mb-3" style="position: relative;">
                     <label for="userCPassword" class="form-label">Confirm Password</label>
                     <input type="password" class="form-control" id="userCPassword" placeholder="Confirm password"
-                        required>
+                        required> <i id="togglePassword1" class="fa-solid fa-eye"
+                        style="position: absolute; top: 60%; right: 15px;  cursor: pointer; ">
+                    </i>
+
                     <div class="invalid-feedback">Password Does not match </div>
                 </div>
 

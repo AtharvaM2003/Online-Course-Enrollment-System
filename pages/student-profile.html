@@ -44,9 +44,12 @@
                         <label for="editPhone" class="form-label">Phone</label>
                         <input type="tel" class="form-control" id="editPhone" required>
                     </div>
-                    <div class="mb-3">
-                        <label for="editPass" class="form-label">Password</label>
+                    <div class="mb-3" style="position: relative;">
+                        <label for="editPass" class="form-label" style="position: relative;">Password</label>
                         <input type="password" class="form-control" id="editPass" required>
+                        <i id="togglePassword" class="fa-solid fa-eye"
+                            style="position: absolute; top: 60%; right: 15px;  cursor: pointer; ">
+                        </i>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -73,6 +76,18 @@
 
         const form = document.querySelector("form");
 
+        const togglePassword = document.getElementById('togglePassword');
+
+        //Show Password
+        togglePassword.addEventListener('click', function () {
+            const type = editPassInput.type === 'password' ? 'text' : 'password';
+            editPassInput.type = type;
+
+            this.classList.toggle('fa-eye');
+            this.classList.toggle('fa-eye-slash');
+        });
+
+        //------------------------------------------------------------------
         function getUserId() {
             return sessionStorage.getItem("userId");
         }

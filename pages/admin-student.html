@@ -61,9 +61,12 @@
                         <div class="invalid-feedback">Enter Valid Phone Number </div>
                     </div>
 
-                    <div class="mb-3">
+                    <div class="mb-3" style="position: relative;">
                         <label for="studentPassword" class="form-label">Password</label>
                         <input type="password" class="form-control" id="studentPassword" required>
+                        <i id="togglePassword" class="fa-solid fa-eye"
+                            style="position: absolute; top: 60%; right: 15px;  cursor: pointer; ">
+                        </i>
                         <div class="invalid-feedback">Enter Valid Password </div>
                     </div>
 
@@ -91,6 +94,18 @@
         const submit = document.getElementById("submitBtn");
         let searchInput = document.createElement("input");
 
+        const togglePassword = document.getElementById('togglePassword');
+
+        //Show Password------------------------------------------------------
+        togglePassword.addEventListener('click', function () {
+            const type = studentPassInput.type === 'password' ? 'text' : 'password';
+            studentPassInput.type = type;
+
+            this.classList.toggle('fa-eye');
+            this.classList.toggle('fa-eye-slash');
+        });
+
+        //Sorting here--------------------------------------------------------------
         document.querySelector("th:nth-child(2)").style.cursor = "pointer";
         document.querySelector("th:nth-child(2)").addEventListener("click", () => {
             const sorted = [...allStudents].sort((a, b) => a.name.localeCompare(b.name) * sortDirection);
@@ -114,7 +129,7 @@
 
         let filtered = allStudents.filter(c => c.name.toLowerCase().includes(searchTerm) || c.email.toLowerCase().includes(searchTerm) || String(c.phone).includes(String(searchTerm)));
 
-        // Search bar setup
+        // Search bar here------------------------------------------------------------
         searchInput.setAttribute("type", "text");
         searchInput.setAttribute("placeholder", "Search by Instructor Name...");
         searchInput.classList.add("form-control", "mb-3");
@@ -130,7 +145,7 @@
 
 
 
-        //-------------------------------------------------------
+        //Fetch  Student-------------------------------------------------------
 
         function fetchAndRenderStudent() {
             fetch(`${apiUrl}/Users`)
@@ -142,7 +157,7 @@
         }
 
 
-        //--------------------------------------------------------
+        //Display Fetched  in table--------------------------------------------------------
         function renderStudents(students) {
             const tbody = document.getElementById("studentTableBody");
             tbody.innerHTML = "";
@@ -151,16 +166,16 @@
                 if (stud.usertype === "student") {
                     const row = document.createElement("tr");
                     row.innerHTML = `
-      <td>${stud.id}</td>
-      <td>${stud.name}</td>
-      <td>${stud.email}</td>
-      <td>${stud.phone}</td>
-      <td>
-        <button class="btn btn-sm btn-warning me-1" data-id="${stud.id}"><i class="fa fa-edit" ></i></button>
-        <button class="btn btn-sm btn-danger" data-id="${stud.id}"><i class="fa fa-trash"></i></button>
+                    <td>${stud.id}</td>
+                    <td>${stud.name}</td>
+                    <td>${stud.email}</td>
+                    <td>${stud.phone}</td>
+                    <td>
+                    <button class="btn btn-sm btn-warning me-1" data-id="${stud.id}"><i class="fa fa-edit" ></i></button>
+                    <button class="btn btn-sm btn-danger" data-id="${stud.id}"><i class="fa fa-trash"></i></button>
        
-      </td>
-    `;
+                    </td>
+                    `;
                     tbody.appendChild(row);
                 }
             });
@@ -181,7 +196,7 @@
 
         }
         fetchAndRenderStudent();
-        //-----------------------------------------------------------------------------
+        //Load in Fields to edit-----------------------------------------------------------------------------
         function loadStudentForEdit(id) {
             fetch(`${apiUrl}/Users/${id}`)
                 .then(res => res.json())
@@ -198,7 +213,7 @@
                 });
         }
 
-        //-----------------------------------------------------------------------------
+        //Delete Data-----------------------------------------------------------------------------
 
         function deleteStudent(id) {
             console.log("ID Received " + id);
@@ -208,7 +223,7 @@
                 }).then(() => fetchAndRenderStudent());
             }
         }
-        //-----------------------------------------------------------------------------
+        //Add and Edit Student-----------------------------------------------------------------------------
         form.addEventListener("submit", function (e) {
             e.preventDefault();
 
@@ -248,7 +263,7 @@
                 }
             }
         });
-        //-----------------------------------------------------------------------------
+        //Clear Validations-----------------------------------------------------------------------------
         function clearValidation() {
             studentNameInput.classList.remove("is-invalid");
             studentEmailInput.classList.remove("is-invalid");
@@ -302,7 +317,7 @@
             }
         }
 
-
+        //Validating Mobile
         function validateMobile() {
             const mobileRegex = /^[789]\d{9}$/;
             if (mobileRegex.test(studentPhoneInput.value.trim())) {
@@ -316,6 +331,6 @@
             }
         }
 
-        //-------------------------------------------------------------------------------
-    })()
+        //END-------------------------------------------------------------------------------
+    })();
 </script>
