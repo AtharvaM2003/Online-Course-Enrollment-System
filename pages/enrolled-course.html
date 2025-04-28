@@ -13,7 +13,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     (() => {
-        const apiUrl = "http://localhost:3000";
+        const apiUrl = "http://localhost:8080/api";
         const allEnrolledCourses = document.getElementById('enrolledCourseList');
 
         let allInstructors = [];
@@ -26,9 +26,9 @@
         //Fetch Enrollements, Courses, Instructors--------------------------------------------
         function fetchEnrolledCourses() {
             Promise.all([
-                fetch(`${apiUrl}/Instructors`).then(res => res.json()),
-                fetch(`${apiUrl}/Courses`).then(res => res.json()),
-                fetch(`${apiUrl}/Enrollments?userid=${getUserId()}`).then(res => res.json())
+                fetch(`${apiUrl}/instructors`).then(res => res.json()),
+                fetch(`${apiUrl}/courses`).then(res => res.json()),
+                fetch(`${apiUrl}/enrollments?userid=${getUserId()}`).then(res => res.json())
             ])
                 .then(([instructorData, courseData, enrollmentData]) => {
                     allInstructors = instructorData;

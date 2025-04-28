@@ -52,7 +52,7 @@
 
         <script>
             (() => {
-                const mainUrl = "http://localhost:3000";
+                const mainUrl = "http://localhost:8080/api";
                 const totalStudentCount = document.getElementById("tstud");
                 const totalCourseCount = document.getElementById("tcourse");
                 const totalInstructorCount = document.getElementById("tinstruct");
@@ -62,7 +62,7 @@
                 let instructorList = [];
 
                 function loadStudents() {
-                    fetch(`${mainUrl}/Users`)
+                    fetch(`${mainUrl}/users`)
                         .then(res => res.json())
                         .then(data => {
                             studentList = data.filter(user => user.usertype === "student");
@@ -75,7 +75,7 @@
                 }
 
                 function loadCourses() {
-                    fetch(`${mainUrl}/Courses`)
+                    fetch(`${mainUrl}/courses`)
                         .then(res => res.json())
                         .then(data => {
                             courseList = data;
@@ -88,7 +88,7 @@
                 }
 
                 function loadInstructors() {
-                    fetch(`${mainUrl}/Instructors`)
+                    fetch(`${mainUrl}/instructors`)
                         .then(res => res.json())
                         .then(data => {
                             instructorList = data;

@@ -51,7 +51,7 @@
         const adminEmailInput = document.getElementById("adminEmail");
         const adminPhoneInput = document.getElementById("adminPhone");
         const adminPassInput = document.getElementById("adminPassword");
-        const apiUrl = "http://localhost:3000";
+        const apiUrl = "http://localhost:8080/api";
         const form = document.querySelector("form");
         const togglePassword = document.getElementById('togglePassword');
 
@@ -67,7 +67,7 @@
 
         //----------------------------------------------------------------------
         function loadAdminForEdit() {
-            fetch(`${apiUrl}/Users/${getUserId()}`)
+            fetch(`${apiUrl}/users/${getUserId()}`)
                 .then(res => res.json())
                 .then(data => {
                     adminNameInput.value = data.name;
@@ -156,7 +156,7 @@
                 password: adminPassInput.value.trim(),
                 usertype: "admin"
             };
-            fetch(`${apiUrl}/Users/${getUserId()}`, {
+            fetch(`${apiUrl}/users/${getUserId()}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(admin)

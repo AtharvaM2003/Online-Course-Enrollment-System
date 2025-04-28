@@ -19,7 +19,7 @@ function verify() {
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
 
-    fetch("http://localhost:3000/Users")
+    fetch("http://localhost:8080/api/users")
         .then(res => res.json())
         .then(users => {
             const user = users.find(u => u.email === email && u.password === password);

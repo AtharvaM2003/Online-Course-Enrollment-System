@@ -1,5 +1,8 @@
 
 function loadPage(page) {
+    if (page) {
+        sessionStorage.setItem('currentPage', page);
+    }
     fetch(`pages/${page}`)
         .then(response => response.text())
         .then(data => {
@@ -32,12 +35,13 @@ function loadPage(page) {
 }
 
 
+
 function renderAdminDashboardCharts() {
 
-    const apiUrl = "http://localhost:3000";
-    const courseUrl = `${apiUrl}/Courses`;
-    const instructorUrl = `${apiUrl}/Instructors`;
-    const enrollUrl = `${apiUrl}/Enrollments`;
+    const apiUrl = "http://localhost:8080/api";
+    const courseUrl = `${apiUrl}/courses`;
+    const instructorUrl = `${apiUrl}/instructors`;
+    const enrollUrl = `${apiUrl}/enrollments`;
 
     //Fetch Course wise Enrollments--------------------------------------
     function renderPopularCoursesChart() {
@@ -176,10 +180,10 @@ function renderAdminDashboardCharts() {
 
 // Student Dashboard Chart 
 function renderStudentDashboardCharts() {
-    const apiUrl = "http://localhost:3000";
-    const courseUrl = `${apiUrl}/Courses`;
-    const instructorUrl = `${apiUrl}/Instructors`;
-    const enrollUrl = `${apiUrl}/Enrollments`;
+    const apiUrl = "http://localhost:8080/api";
+    const courseUrl = `${apiUrl}/courses`;
+    const instructorUrl = `${apiUrl}/instructors`;
+    const enrollUrl = `${apiUrl}/enrollments`;
     function loadTopCoursesChart() {
         Promise.all([
             fetch(courseUrl),

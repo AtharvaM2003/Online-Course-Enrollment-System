@@ -30,10 +30,10 @@
 
 <script>
     (() => {
-        const apiUrl = "http://localhost:3000";
-        const enrollUrl = `${apiUrl}/Enrollments`;
-        const courseUrl = `${apiUrl}/Courses`;
-        const userUrl = `${apiUrl}/Users`;
+        const apiUrl = "http://localhost:8080/api";
+        const enrollUrl = `${apiUrl}/enrollments`;
+        const courseUrl = `${apiUrl}/courses`;
+        const userUrl = `${apiUrl}/users`;
         const tbody = document.getElementById("enrollmentBody");
         const searchInput = document.getElementById("enrollmentSearch");
         let allEnrollments = [];

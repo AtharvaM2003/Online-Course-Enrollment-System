@@ -30,10 +30,10 @@
 <script>
 
     (() => {
-        const apiUrl = "http://localhost:3000";
-        const courseUrl = `${apiUrl}/Courses`;
-        const instructorUrl = `${apiUrl}/Instructors`;
-        const enrollUrl = `${apiUrl}/Enrollments`;
+        const apiUrl = "http://localhost:8080/api";
+        const courseUrl = `${apiUrl}/courses`;
+        const instructorUrl = `${apiUrl}/instructors`;
+        const enrollUrl = `${apiUrl}/enrollments`;
         const tbody = document.getElementById("courseEnrollBody");
         const searchInput = document.getElementById("courseSearch");
 
@@ -70,26 +70,7 @@
             renderCourseRows(sorted);
         });
 
-        // Display Course wise total enrollments------------------------------------
-        function renderCourseRows(courses) {
-            tbody.innerHTML = "";
-            courses.forEach(course => {
-                const tr = document.createElement("tr");
 
-                const instructor = instructorList.find(inst => inst.id === course.instructorid);
-                const instructorName = instructor ? instructor.name : "N/A";
-                const enrollCount = enrollCountObj[course.id] || 0;
-
-                tr.innerHTML = `
-                <td>${course.id}</td>
-                <td>${course.title}</td>
-                <td>${instructorName}</td>
-                <td>${enrollCount}</td>
-            `;
-
-                tbody.appendChild(tr);
-            });
-        }
 
         // Fetch course, enrollments and instructor-------------------------------
         function fetchCourseEnrollmentData() {
@@ -116,6 +97,26 @@
                 });
         }
 
+        // Display Course wise total enrollments------------------------------------
+        function renderCourseRows(courses) {
+            tbody.innerHTML = "";
+            courses.forEach(course => {
+                const tr = document.createElement("tr");
+
+                const instructor = instructorList.find(inst => inst.id === course.instructorid);
+                const instructorName = instructor ? instructor.name : "N/A";
+                const enrollCount = enrollCountObj[course.id] || 0;
+
+                tr.innerHTML = `
+                <td>${course.id}</td>
+                <td>${course.title}</td>
+                <td>${instructorName}</td>
+                <td>${enrollCount}</td>
+            `;
+
+                tbody.appendChild(tr);
+            });
+        }
         fetchCourseEnrollmentData();
     })();
     //END-----------------------------------------------------------

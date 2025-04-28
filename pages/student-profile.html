@@ -65,7 +65,7 @@
 
 <script>
     (() => {
-        const apiUrl = "http://localhost:3000";
+        const apiUrl = "http://localhost:8080/api";
         const studentNamePara = document.getElementById("studentName");
         const studentEmailPara = document.getElementById("studentEmail");
         const studentPhonePara = document.getElementById("studentPhone");
@@ -93,7 +93,7 @@
         }
 
         function loadStudentProfile() {
-            fetch(`${apiUrl}/Users/${getUserId()}`)
+            fetch(`${apiUrl}/users/${getUserId()}`)
                 .then(res => res.json())
                 .then(data => {
                     studentNamePara.textContent = data.name;
@@ -159,7 +159,7 @@
                 password: editPassInput.value.trim(),
                 usertype: "student"
             };
-            fetch(`${apiUrl}/Users/${getUserId()}`, {
+            fetch(`${apiUrl}/users/${getUserId()}`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(student)

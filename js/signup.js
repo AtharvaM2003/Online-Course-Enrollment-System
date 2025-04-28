@@ -1,4 +1,4 @@
-const apiUrl = "http://localhost:3000/Users";
+const apiUrl = "http://localhost:8080/api/users";
 let allUsers = [];
 const form = document.getElementById("userForm");
 const userName = document.getElementById("userName");

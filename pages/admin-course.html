@@ -81,7 +81,7 @@
         let instructors = [];
         let allCourses = [];
 
-        const apiUrl = "http://localhost:3000";
+        const apiUrl = "http://localhost:8080/api";
         const courseForm = document.getElementById("courseForm");
         const titleInput = document.getElementById("courseTitle");
         const descriptionInput = document.getElementById("courseDescription");
@@ -90,6 +90,8 @@
         const submitBtn = document.getElementById("submit");
         let searchInput = document.createElement("input");
 
+
+        sessionStorage.setItem("lastPageVisited", "adminCourse");
         //Validations-------------------------------------------------------
         function validateCourseName() {
             let isValid = true;
@@ -178,7 +180,7 @@
 
         //Load Instructor for Drop down and also Displaying name---------------------------------
         function loadInstructors() {
-            fetch(`${apiUrl}/Instructors`)
+            fetch(`${apiUrl}/instructors`)
                 .then(res => res.json())
                 .then(data => {
                     instructors = data;
@@ -192,7 +194,7 @@
 
         //Fetch Course------------------------------------------------------------
         function fetchAndRenderCourses() {
-            fetch(`${apiUrl}/Courses`)
+            fetch(`${apiUrl}/courses`)
                 .then(res => res.json())
                 .then(data => {
                     allCourses = data;
@@ -261,7 +263,7 @@
                 fees: feeInput.value.trim()
             };
 
-            fetch(`${apiUrl}/Courses`, {
+            fetch(`${apiUrl}/courses`, {
                 method: 'POST',
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(newCourse)
@@ -282,7 +284,7 @@
                 fees: String(feeInput.value)
             };
 
-            fetch(`${apiUrl}/Courses/${editId}`, {
+            fetch(`${apiUrl}/courses/${editId}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ ...updatedCourse, id: editId })
@@ -303,7 +305,7 @@
         //Delete--------------------------------------------
         function deleteCourse(id) {
             if (confirm("Are you sure you want to delete this course?")) {
-                fetch(`${apiUrl}/Courses/${id}`, {
+                fetch(`${apiUrl}/courses/${id}`, {
                     method: "DELETE"
                 }).then(() => fetchAndRenderCourses());
             }
@@ -321,7 +323,7 @@
 
         //Set Fields to Edit------------------------------------------------
         function loadCourseForEdit(id) {
-            fetch(`${apiUrl}/Courses/${id}`)
+            fetch(`${apiUrl}/courses/${id}`)
                 .then(response => response.json())
                 .then(data => {
                     titleInput.value = data.title;

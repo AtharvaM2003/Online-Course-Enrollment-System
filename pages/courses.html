@@ -28,7 +28,7 @@
 <script>
 
     (() => {
-        const apiUrl = "http://localhost:3000";
+        const apiUrl = "http://localhost:8080/api";
         const courseList = document.getElementById('courseList');
         const searchBar = document.getElementById('searchBar');
         const priceFilter = document.getElementById('priceFilter');
@@ -47,9 +47,9 @@
 
         function fetchData() {
             Promise.all([
-                fetch(`${apiUrl}/Instructors`).then(res => res.json()),
-                fetch(`${apiUrl}/Courses`).then(res => res.json()),
-                fetch(`${apiUrl}/Enrollments?userid=${getUserId()}`).then(res => res.json())
+                fetch(`${apiUrl}/instructors`).then(res => res.json()),
+                fetch(`${apiUrl}/courses`).then(res => res.json()),
+                fetch(`${apiUrl}/enrollments?userid=${getUserId()}`).then(res => res.json())
             ])
                 .then(([instructorsData, coursesData, enrollmentsData]) => {
                     allInstructors = instructorsData;
@@ -113,7 +113,7 @@
                 enrollmentdate: new Date().toISOString().split('T')[0]
             };
 
-            fetch(`${apiUrl}/Enrollments`, {
+            fetch(`${apiUrl}/enrollments`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(enrollmentData)
