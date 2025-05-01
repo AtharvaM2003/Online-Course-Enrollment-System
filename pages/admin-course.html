@@ -32,7 +32,7 @@
 <div class="modal fade" id="addCourseModal" tabindex="-1" aria-labelledby="addCourseModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form id="courseForm" novalidate>
+            <form id="courseForm" novalidate name="form">
                 <div class="modal-header">
                     <h5 class="modal-title" id="addCourseModalLabel">Add New Course</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -89,9 +89,9 @@
         const feeInput = document.getElementById("courseFee");
         const submitBtn = document.getElementById("submit");
         let searchInput = document.createElement("input");
+        let modal = document.getElementById("addCourseModal");
 
 
-        sessionStorage.setItem("lastPageVisited", "adminCourse");
         //Validations-------------------------------------------------------
         function validateCourseName() {
             let isValid = true;
@@ -166,7 +166,7 @@
 
         //Searching-------------------------------------------------------------------------------------
         searchInput.setAttribute("type", "text");
-        searchInput.setAttribute("placeholder", "Search Instructors...");
+        searchInput.setAttribute("placeholder", "Search Courses...");
         searchInput.classList.add("form-control", "mb-3");
         document.querySelector(".table").parentNode.insertBefore(searchInput, document.querySelector(".table"));
         searchInput.addEventListener("input", () => {
@@ -247,10 +247,10 @@
             if (validateCourseName() & validateCourseDesc() & validateInstructor() & validateFees()) {
                 if (editId) {
                     updateCourse();
-                    loadPage(sessionStorage.getItem('currentPage'));
+
                 } else {
                     addCourse();
-                    loadPage(sessionStorage.getItem('currentPage'));
+
                 }
             }
         });
@@ -270,10 +270,21 @@
             }).then(() => {
                 courseForm.reset();
                 clearValidation();
+                closeModal();
                 fetchAndRenderCourses();
             });
         }
 
+        function closeModal() {
+            const modalElement = document.getElementById('addCourseModal');
+            let modalInstance = bootstrap.Modal.getInstance(modalElement);
+            if (!modalInstance) {
+                modalInstance = new bootstrap.Modal(modalElement);
+            }
+            modalInstance.hide();
+            form.reset();
+            clearValidation();
+        }
 
         //Edit---------------------------------------------
         function updateCourse() {
@@ -293,6 +304,7 @@
 
                 courseForm.reset();
                 clearValidation();
+                closeModal();
                 submitBtn.textContent = "Add Course";
                 editId = null;
 
@@ -315,10 +327,10 @@
 
         //Clear Validations-----------------------------------------------
         function clearValidation() {
-            titleInput.classList.remove("is-invalid");
-            descriptionInput.classList.remove("is-invalid");
-            instructorInput.classList.remove("is-invalid");
-            feeInput.classList.remove("is-invalid");
+            titleInput.classList.remove("is-invalid", "is-valid");
+            descriptionInput.classList.remove("is-invalid", "is-valid");
+            instructorInput.classList.remove("is-invalid", "is-valid");
+            feeInput.classList.remove("is-invalid", "is-valid");
         }
 
         //Set Fields to Edit------------------------------------------------

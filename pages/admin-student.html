@@ -94,6 +94,8 @@
         const submit = document.getElementById("submitBtn");
         let searchInput = document.createElement("input");
 
+
+
         const togglePassword = document.getElementById('togglePassword');
 
         //Show Password------------------------------------------------------
@@ -139,7 +141,7 @@
             const searchTerm = searchInput.value.toLowerCase();
             let filtered = allStudents.filter(c => c.name.toLowerCase().includes(searchTerm) || c.email.toLowerCase().includes(searchTerm) || String(c.phone).includes(String(searchTerm)));
 
-            renderInstructors(filtered);
+            renderStudents(filtered);
         });
 
 
@@ -244,11 +246,14 @@
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify(student)
                     }).then(() => {
+                        clearValidation();
                         fetchAndRenderStudent();
                         form.reset();
                         editId = null;
                         submitBtn.textContent = "Add Student";
-                        clearValidation();
+
+                        closeModal();
+
                     });
                 } else {
                     fetch(`${apiUrl}/users`, {
@@ -256,20 +261,25 @@
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify(student)
                     }).then(() => {
+                        clearValidation();
                         fetchAndRenderStudent();
                         form.reset();
-                        clearValidation();
+
+                        closeModal();
+
                     });
                 }
             }
         });
+
         //Clear Validations-----------------------------------------------------------------------------
         function clearValidation() {
-            studentNameInput.classList.remove("is-invalid");
-            studentEmailInput.classList.remove("is-invalid");
-            studentPhoneInput.classList.remove("is-invalid");
-            studentPassInput.classList.remove("is-invalid");
+            studentNameInput.classList.remove("is-invalid", "is-valid");
+            studentEmailInput.classList.remove("is-invalid", "is-valid");
+            studentPhoneInput.classList.remove("is-invalid", "is-valid");
+            studentPassInput.classList.remove("is-invalid", "is-valid");
         }
+
         //-----------------------------------VALIDATIONS------------------------------------------
 
         //Validating Username
@@ -330,6 +340,17 @@
                 return false;
             }
         }
+        function closeModal() {
+            const modalElement = document.getElementById('addStudentModal');
+            let modalInstance = bootstrap.Modal.getInstance(modalElement);
+            if (!modalInstance) {
+                modalInstance = new bootstrap.Modal(modalElement);
+            }
+            modalInstance.hide();
+            form.reset();
+            clearValidation();
+        }
+
 
         //END-------------------------------------------------------------------------------
     })();

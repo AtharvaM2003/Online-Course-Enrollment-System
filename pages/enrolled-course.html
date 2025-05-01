@@ -28,7 +28,7 @@
             Promise.all([
                 fetch(`${apiUrl}/instructors`).then(res => res.json()),
                 fetch(`${apiUrl}/courses`).then(res => res.json()),
-                fetch(`${apiUrl}/enrollments?userid=${getUserId()}`).then(res => res.json())
+                fetch(`${apiUrl}/enrollments/user/${getUserId()}`).then(res => res.json())
             ])
                 .then(([instructorData, courseData, enrollmentData]) => {
                     allInstructors = instructorData;

@@ -115,9 +115,20 @@
             }
         }
         function clearValidation() {
-            instuctorNameInput.classList.remove("is-invalid");
-            instructorExpertiseInput.classList.remove("is-invalid");
+            instuctorNameInput.classList.remove("is-invalid", "is-valid");
+            instructorExpertiseInput.classList.remove("is-invalid", "is-valid");
 
+        }
+
+        function closeModal() {
+            const modalElement = document.getElementById('addInstructorModal');
+            let modalInstance = bootstrap.Modal.getInstance(modalElement);
+            if (!modalInstance) {
+                modalInstance = new bootstrap.Modal(modalElement);
+            }
+            modalInstance.hide();
+            form.reset();
+            clearValidation();
         }
 
         //Sorting----------------------------------------------------------------------------
@@ -165,6 +176,7 @@
                     form.reset();
                     editId = null;
                     submitBtn.textContent = "Add Instructor";
+                    closeModal();
                     clearValidation();
                 });
             } else {
@@ -176,14 +188,12 @@
                     fetchAndRenderInstructors();
                     form.reset();
                     clearValidation();
+                    closeModal();
                 });
             }
         });
 
         //Delete Instructor----------------------------------------------------------------------------
-        function getPage() {
-            return sessionStorage.getItem("currentPage");
-        }
 
         function deleteInstructor(id) {
             console.log("ID Received " + id);
@@ -193,7 +203,7 @@
                 })
                     .then(() => {
 
-                        loadPage(getPage());
+                        fetchAndRenderInstructors();
                     })
                     .catch(error => {
                         console.error("Error deleting instructor:", error);
