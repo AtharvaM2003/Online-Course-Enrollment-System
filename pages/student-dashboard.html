@@ -52,56 +52,27 @@
 
         <script>
             (() => {
-                const mainUrl = "http://localhost:8080/api";
+                const apiUrl = "http://localhost:8080/api/dashboard";
                 const totalStudentCount = document.getElementById("tstud");
                 const totalCourseCount = document.getElementById("tcourse");
                 const totalInstructorCount = document.getElementById("tinstruct");
 
-                let studentList = [];
-                let courseList = [];
-                let instructorList = [];
-
-                function loadStudents() {
-                    fetch(`${mainUrl}/users`)
+                function loadDashboard() {
+                    fetch(apiUrl)
                         .then(res => res.json())
                         .then(data => {
-                            studentList = data.filter(user => user.usertype === "student");
-                            totalStudentCount.textContent = studentList.length;
+                            totalStudentCount.textContent = data.studentCount;
+                            totalCourseCount.textContent = data.courseCount;
+                            totalInstructorCount.textContent = data.instructorCount;
                         })
                         .catch(error => {
-                            console.error("Error fetching students:", error);
+                            console.error("Error fetching dashboard data:", error);
                             totalStudentCount.textContent = "Error";
-                        });
-                }
-
-                function loadCourses() {
-                    fetch(`${mainUrl}/courses`)
-                        .then(res => res.json())
-                        .then(data => {
-                            courseList = data;
-                            totalCourseCount.textContent = courseList.length;
-                        })
-                        .catch(error => {
-                            console.error("Error fetching courses:", error);
                             totalCourseCount.textContent = "Error";
-                        });
-                }
-
-                function loadInstructors() {
-                    fetch(`${mainUrl}/instructors`)
-                        .then(res => res.json())
-                        .then(data => {
-                            instructorList = data;
-                            totalInstructorCount.textContent = instructorList.length;
-                        })
-                        .catch(error => {
-                            console.error("Error fetching instructors:", error);
                             totalInstructorCount.textContent = "Error";
                         });
                 }
 
-                loadStudents();
-                loadCourses();
-                loadInstructors();
+                loadDashboard();
             })();
         </script>

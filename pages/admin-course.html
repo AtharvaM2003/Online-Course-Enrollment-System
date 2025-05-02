@@ -78,7 +78,7 @@
 
         let editId = null;
         let sortDirection = 1;
-        let instructors = [];
+
         let allCourses = [];
 
         const apiUrl = "http://localhost:8080/api";
@@ -183,7 +183,6 @@
             fetch(`${apiUrl}/instructors`)
                 .then(res => res.json())
                 .then(data => {
-                    instructors = data;
                     const instSelect = document.getElementById("instructorInput");
                     data.forEach(inst => {
                         instSelect.innerHTML += `<option value="${inst.id}">${inst.name}</option>`;
@@ -208,14 +207,12 @@
             tbody.innerHTML = "";
             courses.forEach(cour => {
                 const row = document.createElement("tr");
-                const instructor = instructors.find(inst => inst.id === cour.instructorid);
-                let iname = instructor ? instructor.name : "N A";
 
                 row.innerHTML = `
                     <td>${cour.id}</td>
                     <td>${cour.title}</td>
                     <td>${cour.description}</td>
-                    <td>${iname}</td>
+                    <td>${cour.instructor.name}</td>
                     <td>${cour.fees}</td>
                     <td>
                         <button class="btn btn-sm btn-warning me-1" data-id="${cour.id}"><i class="fa fa-edit" ></i></button>

@@ -1,5 +1,5 @@
 const apiUrl = "http://localhost:8080/api/users";
-let allUsers = [];
+
 const form = document.getElementById("userForm");
 const userName = document.getElementById("userName");
 const userEmail = document.getElementById("userEmail");
@@ -7,18 +7,14 @@ const userphone = document.getElementById("userPhone");
 const userPass = document.getElementById("userPassword");
 const userCPass = document.getElementById("userCPassword");
 const userType = document.getElementById("role");
-const submit = document.getElementById("submitBtn");
 const togglePassword = document.getElementById('togglePassword');
 const togglePassword1 = document.getElementById('togglePassword1');
+const errorDiv = document.getElementById("errorMessage");
 
-let allEmail = [];
-let editId = null;
-
-//Show Passwords-------------------------------------------------
+// Show/Hide Passwords
 togglePassword.addEventListener('click', function () {
     const type = userPass.type === 'password' ? 'text' : 'password';
     userPass.type = type;
-
     this.classList.toggle('fa-eye');
     this.classList.toggle('fa-eye-slash');
 });
@@ -26,14 +22,20 @@ togglePassword.addEventListener('click', function () {
 togglePassword1.addEventListener('click', function () {
     const type = userCPass.type === 'password' ? 'text' : 'password';
     userCPass.type = type;
-
     this.classList.toggle('fa-eye');
     this.classList.toggle('fa-eye-slash');
 });
 
-//Validations-----------------------------------------------------------
+// Validations
 
-//Validating Username
+
+userName.addEventListener("blur", validateUsername);
+userPass.addEventListener("blur", validatePassword);
+userEmail.addEventListener("blur", validateEmail);
+userphone.addEventListener("blur", validateMobile);
+userCPass.addEventListener("blur", validateCPass);
+userType.addEventListener("blur", validateType);
+
 function validateUsername() {
     if (userName.value.trim().length >= 5) {
         userName.classList.add("is-valid");
@@ -46,7 +48,6 @@ function validateUsername() {
     }
 }
 
-//Validating Pass
 function validatePassword() {
     const pass = userPass.value;
     const passRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}$/;
@@ -62,15 +63,12 @@ function validatePassword() {
     }
 }
 
-//Validating Cpass
 function validateCPass() {
     const pass = userPass.value;
     const cpass = userCPass.value;
-
     const passRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}$/;
 
     if (pass === cpass && passRegex.test(cpass)) {
-
         userCPass.classList.add("is-valid");
         userCPass.classList.remove("is-invalid");
         return true;
@@ -81,14 +79,11 @@ function validateCPass() {
     }
 }
 
-//validating Email
 function validateEmail() {
     if (userEmail.value && userEmail.checkValidity()) {
         userEmail.classList.add("is-valid");
         userEmail.classList.remove("is-invalid");
-
         return true;
-
     } else {
         userEmail.classList.add("is-invalid");
         userEmail.classList.remove("is-valid");
@@ -96,7 +91,6 @@ function validateEmail() {
     }
 }
 
-//Validate Mobile
 function validateMobile() {
     const mobileRegex = /^[789]\d{9}$/;
     if (mobileRegex.test(userphone.value.trim())) {
@@ -110,7 +104,6 @@ function validateMobile() {
     }
 }
 
-//Validate Type
 function validateType() {
     if (userType.value) {
         userType.classList.add("is-valid");
@@ -123,52 +116,61 @@ function validateType() {
     }
 }
 
-//Check User Exists or not and Add--------------------------------------------------------------
+// Submit 
 form.addEventListener("submit", function (e) {
     e.preventDefault();
-    fetch(`${apiUrl}`)
-        .then(res => res.json())
-        .then(users => {
-            const user = users.find(u => u.email === userEmail.value);
-            if (!user) {
 
-                if (validateUsername() & validateEmail() & validateMobile() & validatePassword() & validateType() & validateCPass()) {
-                    addUser();
-                    window.location.href = "../pages/login.html";
-                }
+    errorDiv.textContent = "";
+    errorDiv.classList.add("d-none");
 
+    const isValid =
+        validateUsername() &&
+        validateEmail() &&
+        validateMobile() &&
+        validatePassword() &&
+        validateCPass() &&
+        validateType();
 
-            }
-            else {
-                alert("User Exists!!");
-                document.getElementById("error").textContent = "Email Present";
-            }
-        })
-
-        .catch(err => {
-            console.error("Error fetching users:", err);
-            document.getElementById("error").textContent = "Server error. Please try again later.";
-        });
+    if (isValid) {
+        addUser();
+    }
 });
 
-//Add User-------------------------------------
+// Add User
 function addUser() {
-    const users = {
+    const user = {
         name: userName.value.trim(),
         email: userEmail.value.trim(),
         phone: userphone.value.trim(),
         password: userPass.value.trim(),
         usertype: userType.value.trim(),
-
     };
 
-    fetch(apiUrl, {
+    fetch(`${apiUrl}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(users)
-    }).then(() => {
-        alert("User Registered Successfully!");
-    });
+        body: JSON.stringify(user),
+    })
+        .then((response) => {
+            if (response.status === 409) {
+                userEmail.classList.add("is-invalid");
+                userEmail.classList.remove("is-valid");
+                errorDiv.textContent = "Email already exists!";
+                errorDiv.classList.remove("d-none");
+                throw new Error("Email conflict");
+            }
 
-    //END------------------------------------------------------------------
+            if (!response.ok) {
+                throw new Error("Failed to register user.");
+            }
+
+            return response.json();
+        })
+        .then(() => {
+            alert("User Registered Successfully!");
+            window.location.href = "../pages/login.html";
+        })
+        .catch((error) => {
+            console.error("Error:", error.message);
+        });
 }

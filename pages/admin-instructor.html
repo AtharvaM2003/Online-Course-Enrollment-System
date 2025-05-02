@@ -63,6 +63,7 @@
 </div>
 <script>
     (() => {
+
         const apiUrl = "http://localhost:8080/api/instructors";
         const instuctorNameInput = document.getElementById("instructorName");
         const instructorExpertiseInput = document.getElementById("expertise");
@@ -169,7 +170,8 @@
             if (editId) {
                 fetch(`${apiUrl}/${editId}`, {
                     method: "PUT",
-                    headers: { "Content-Type": "application/json" },
+                    headers: { 'Authorization': `Basic ${basicAuth}`, "Content-Type": "application/json" },
+
                     body: JSON.stringify(instructor)
                 }).then(() => {
                     fetchAndRenderInstructors();
@@ -231,7 +233,13 @@
 
         //Fetch Instructor----------------------------------------------------------------------------
         function fetchAndRenderInstructors() {
-            fetch(apiUrl)
+            fetch(`${apiUrl}`, {
+                method: 'GET',
+                headers: {
+
+                    'Content-Type': 'application/json'
+                }
+            })
                 .then(res => res.json())
                 .then(data => {
                     allInstructors = data;
