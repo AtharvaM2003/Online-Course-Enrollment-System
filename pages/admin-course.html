@@ -20,7 +20,7 @@
                 <th>Course ID</th>
                 <th>Title</th>
                 <th>Description</th>
-                <th>Instructor </th>
+                <th>Instructor</th>
                 <th>Fee (₹)</th>
                 <th>Actions</th>
             </tr>
@@ -29,10 +29,11 @@
     </table>
 </div>
 
+<!-- Modal -->
 <div class="modal fade" id="addCourseModal" tabindex="-1" aria-labelledby="addCourseModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form id="courseForm" novalidate name="form">
+            <form id="courseForm" novalidate>
                 <div class="modal-header">
                     <h5 class="modal-title" id="addCourseModalLabel">Add New Course</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -46,21 +47,18 @@
                     <div class="mb-3">
                         <label for="courseDescription" class="form-label">Description</label>
                         <textarea class="form-control" id="courseDescription" rows="3" required></textarea>
-
                         <div class="invalid-feedback">At least 10 characters required.</div>
                     </div>
                     <div class="mb-3">
-                        <label for="instructorInput">Instructor</label>
-                        <select class="form-select" name="instructor" id="instructorInput">
+                        <label for="instructorInput" class="form-label">Instructor</label>
+                        <select class="form-select" id="instructorInput" required>
                             <option value="">--Select--</option>
                         </select>
-
                         <div class="invalid-feedback">Select Option</div>
                     </div>
                     <div class="mb-3">
                         <label for="courseFee" class="form-label">Fee (₹)</label>
                         <input type="number" class="form-control" id="courseFee" required>
-
                         <div class="invalid-feedback">Enter Valid Fee</div>
                     </div>
                 </div>
@@ -72,14 +70,12 @@
         </div>
     </div>
 </div>
-
 <script>
     (() => {
-
         let editId = null;
         let sortDirection = 1;
-
         let allCourses = [];
+        let instructorMap = {};
 
         const apiUrl = "http://localhost:8080/api";
         const courseForm = document.getElementById("courseForm");
@@ -89,10 +85,8 @@
         const feeInput = document.getElementById("courseFee");
         const submitBtn = document.getElementById("submit");
         let searchInput = document.createElement("input");
-        let modal = document.getElementById("addCourseModal");
 
-
-        //Validations-------------------------------------------------------
+        // Validations
         function validateCourseName() {
             let isValid = true;
             if (titleInput.value.trim().length < 5) {
@@ -136,7 +130,8 @@
             }
             return isValid;
         }
-        //Sorting--------------------------------------------------------------------
+
+        // Sorting
         document.querySelector("th:nth-child(2)").style.cursor = "pointer";
         document.querySelector("th:nth-child(2)").addEventListener("click", () => {
             const sorted = [...allCourses].sort((a, b) => a.title.localeCompare(b.title) * sortDirection);
@@ -157,6 +152,7 @@
             sortDirection *= -1;
             renderCourses(sorted);
         });
+
         document.querySelector("th:nth-child(5)").style.cursor = "pointer";
         document.querySelector("th:nth-child(5)").addEventListener("click", () => {
             const sorted = [...allCourses].sort((a, b) => ((a.fees) - (b.fees)) * sortDirection);
@@ -164,7 +160,7 @@
             renderCourses(sorted);
         });
 
-        //Searching-------------------------------------------------------------------------------------
+        // Searching
         searchInput.setAttribute("type", "text");
         searchInput.setAttribute("placeholder", "Search Courses...");
         searchInput.classList.add("form-control", "mb-3");
@@ -178,20 +174,22 @@
             renderCourses(filtered);
         });
 
-        //Load Instructor for Drop down and also Displaying name---------------------------------
+        // Load instructors
         function loadInstructors() {
             fetch(`${apiUrl}/instructors`)
                 .then(res => res.json())
                 .then(data => {
                     const instSelect = document.getElementById("instructorInput");
+                    instSelect.innerHTML = '<option value="">--Select--</option>';
                     data.forEach(inst => {
                         instSelect.innerHTML += `<option value="${inst.id}">${inst.name}</option>`;
+                        instructorMap[inst.id] = inst.name;
                     });
                 });
         }
         loadInstructors();
 
-        //Fetch Course------------------------------------------------------------
+        // Fetch courses
         function fetchAndRenderCourses() {
             fetch(`${apiUrl}/courses`)
                 .then(res => res.json())
@@ -201,22 +199,26 @@
                 });
         }
 
-        //Display Courses---------------------------------------------------
+        // Render courses
         function renderCourses(courses) {
             const tbody = document.getElementById("courseTableBody");
             tbody.innerHTML = "";
+
             courses.forEach(cour => {
                 const row = document.createElement("tr");
-
                 row.innerHTML = `
                     <td>${cour.id}</td>
                     <td>${cour.title}</td>
                     <td>${cour.description}</td>
-                    <td>${cour.instructor.name}</td>
+                    <td>${instructorMap[cour.instructorid] || "Unknown"}</td>
                     <td>${cour.fees}</td>
                     <td>
-                        <button class="btn btn-sm btn-warning me-1" data-id="${cour.id}"><i class="fa fa-edit" ></i></button>
-                        <button class="btn btn-sm btn-danger" data-id="${cour.id}"><i class="fa fa-trash"></i></button>
+                        <button class="btn btn-sm btn-warning me-1" data-id="${cour.id}">
+                            <i class="fa fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger" data-id="${cour.id}">
+                            <i class="fa fa-trash"></i>
+                        </button>
                     </td>
                 `;
                 tbody.appendChild(row);
@@ -236,22 +238,21 @@
                 });
             });
         }
+
         fetchAndRenderCourses();
 
-        //Add & Edit Courses--------------------------------------------------------
+        // Add or Edit course
         courseForm.addEventListener("submit", function (e) {
             e.preventDefault();
             if (validateCourseName() & validateCourseDesc() & validateInstructor() & validateFees()) {
                 if (editId) {
                     updateCourse();
-
                 } else {
                     addCourse();
-
                 }
             }
         });
-        //Add----------------------------------------
+
         function addCourse() {
             const newCourse = {
                 title: titleInput.value.trim(),
@@ -272,18 +273,6 @@
             });
         }
 
-        function closeModal() {
-            const modalElement = document.getElementById('addCourseModal');
-            let modalInstance = bootstrap.Modal.getInstance(modalElement);
-            if (!modalInstance) {
-                modalInstance = new bootstrap.Modal(modalElement);
-            }
-            modalInstance.hide();
-            form.reset();
-            clearValidation();
-        }
-
-        //Edit---------------------------------------------
         function updateCourse() {
             const updatedCourse = {
                 title: titleInput.value.trim(),
@@ -296,22 +285,16 @@
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ ...updatedCourse, id: editId })
-
             }).then(() => {
-
                 courseForm.reset();
                 clearValidation();
                 closeModal();
                 submitBtn.textContent = "Add Course";
                 editId = null;
-
                 fetchAndRenderCourses();
             });
-            instructors.length = 0;
-            loadInstructors();
         }
 
-        //Delete--------------------------------------------
         function deleteCourse(id) {
             if (confirm("Are you sure you want to delete this course?")) {
                 fetch(`${apiUrl}/courses/${id}`, {
@@ -320,9 +303,6 @@
             }
         }
 
-
-
-        //Clear Validations-----------------------------------------------
         function clearValidation() {
             titleInput.classList.remove("is-invalid", "is-valid");
             descriptionInput.classList.remove("is-invalid", "is-valid");
@@ -330,7 +310,6 @@
             feeInput.classList.remove("is-invalid", "is-valid");
         }
 
-        //Set Fields to Edit------------------------------------------------
         function loadCourseForEdit(id) {
             fetch(`${apiUrl}/courses/${id}`)
                 .then(response => response.json())
@@ -346,6 +325,16 @@
                     myModal.show();
                 });
         }
-        //END-----------------------------------------
+
+        function closeModal() {
+            const modalElement = document.getElementById('addCourseModal');
+            let modalInstance = bootstrap.Modal.getInstance(modalElement);
+            if (!modalInstance) {
+                modalInstance = new bootstrap.Modal(modalElement);
+            }
+            modalInstance.hide();
+            courseForm.reset();
+            clearValidation();
+        }
     })();
 </script>

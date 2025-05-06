@@ -8,7 +8,7 @@
 <h2 class="mb-3">Instructor Master</h2>
 
 <div class="mb-3">
-    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addInstructorModal" data-id="chbtn">
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addInstructorModal" id="chbtn">
         <i class="fa fa-plus me-1"></i> Add Instructor
     </button>
 </div>
@@ -23,8 +23,7 @@
                 <th>Actions</th>
             </tr>
         </thead>
-        <tbody id="instructorTableBody">
-        </tbody>
+        <tbody id="instructorTableBody"></tbody>
     </table>
 </div>
 
@@ -38,20 +37,16 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-
-
                     <div class="mb-3">
                         <label for="instructorName" class="form-label">Name</label>
                         <input type="text" class="form-control" id="instructorName" required>
-                        <div class="invalid-feedback">Invalid Name Length </div>
+                        <div class="invalid-feedback">Invalid Name Length</div>
                     </div>
-
                     <div class="mb-3">
                         <label for="expertise" class="form-label">Expertise</label>
                         <input type="text" class="form-control" id="expertise" required>
                         <div class="invalid-feedback">Invalid Expertise Length</div>
                     </div>
-
                 </div>
                 <div class="modal-footer">
                     <button type="submit" id="submitBtn" class="btn btn-success">Save Instructor</button>
@@ -61,125 +56,104 @@
         </div>
     </div>
 </div>
+
 <script>
     (() => {
-
         const apiUrl = "http://localhost:8080/api/instructors";
-        const instuctorNameInput = document.getElementById("instructorName");
-        const instructorExpertiseInput = document.getElementById("expertise");
-        const submit = document.getElementById("submitBtn");
+        const nameInput = document.getElementById("instructorName");
+        const expertiseInput = document.getElementById("expertise");
+        const submitBtn = document.getElementById("submitBtn");
         const form = document.getElementById("instructorForm");
         const searchInput = document.createElement("input");
-        const cgbtn = document.getElementById("chbtn");
+        const chbtn = document.getElementById("chbtn");
+
         let editId = null;
         let sortDirection = 1;
         let allInstructors = [];
 
-        // Search bar setup------------------------------------------------------
-        searchInput.setAttribute("type", "text");
-        searchInput.setAttribute("placeholder", "Search by Instructor Name...");
+        // Add search bar
+        searchInput.type = "text";
+        searchInput.placeholder = "Search by Instructor Name...";
         searchInput.classList.add("form-control", "mb-3");
         document.querySelector(".table").parentNode.insertBefore(searchInput, document.querySelector(".table"));
 
         searchInput.addEventListener("input", () => {
             const searchTerm = searchInput.value.toLowerCase();
-            const filtered = allInstructors.filter(cat =>
-                cat.name.toLowerCase().includes(searchTerm) ||
-                cat.expertise.toLowerCase().includes(searchTerm)
+            const filtered = allInstructors.filter(inst =>
+                inst.name.toLowerCase().includes(searchTerm) ||
+                inst.expertise.toLowerCase().includes(searchTerm)
             );
             renderInstructors(filtered);
         });
 
-        //Validations---------------------------------------------------------------------------
-
         function validateName() {
-            if (instuctorNameInput.value.trim().length >= 5) {
-                instuctorNameInput.classList.add("is-valid");
-                instuctorNameInput.classList.remove("is-invalid");
-                return true;
-            } else {
-                instuctorNameInput.classList.add("is-invalid");
-                instuctorNameInput.classList.remove("is-valid");
-                return false;
-            }
+            const valid = nameInput.value.trim().length >= 5;
+            nameInput.classList.toggle("is-valid", valid);
+            nameInput.classList.toggle("is-invalid", !valid);
+            return valid;
         }
 
         function validateExpertise() {
-            if (instructorExpertiseInput.value.trim().length >= 5) {
-                instructorExpertiseInput.classList.add("is-valid");
-                instructorExpertiseInput.classList.remove("is-invalid");
-                return true;
-            } else {
-                instructorExpertiseInput.classList.add("is-invalid");
-                instructorExpertiseInput.classList.remove("is-valid");
-                return false;
-            }
+            const valid = expertiseInput.value.trim().length >= 5;
+            expertiseInput.classList.toggle("is-valid", valid);
+            expertiseInput.classList.toggle("is-invalid", !valid);
+            return valid;
         }
-        function clearValidation() {
-            instuctorNameInput.classList.remove("is-invalid", "is-valid");
-            instructorExpertiseInput.classList.remove("is-invalid", "is-valid");
 
+        function clearValidation() {
+            nameInput.classList.remove("is-valid", "is-invalid");
+            expertiseInput.classList.remove("is-valid", "is-invalid");
         }
 
         function closeModal() {
             const modalElement = document.getElementById('addInstructorModal');
-            let modalInstance = bootstrap.Modal.getInstance(modalElement);
-            if (!modalInstance) {
-                modalInstance = new bootstrap.Modal(modalElement);
-            }
+            const modalInstance = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
             modalInstance.hide();
             form.reset();
             clearValidation();
+            editId = null;
+            submitBtn.textContent = "Save Instructor";
         }
 
-        //Sorting----------------------------------------------------------------------------
+        // Sorting
+        document.querySelector("th:nth-child(1)").style.cursor = "pointer";
+        document.querySelector("th:nth-child(1)").addEventListener("click", () => {
+            const sorted = [...allInstructors].sort((a, b) => (a.id - b.id) * sortDirection);
+            sortDirection *= -1;
+            renderInstructors(sorted);
+        });
+
         document.querySelector("th:nth-child(2)").style.cursor = "pointer";
         document.querySelector("th:nth-child(2)").addEventListener("click", () => {
-            const sorted = [...allInstructors].sort((a, b) =>
-                a.name.localeCompare(b.name) * sortDirection
-            );
+            const sorted = [...allInstructors].sort((a, b) => a.name.localeCompare(b.name) * sortDirection);
             sortDirection *= -1;
             renderInstructors(sorted);
         });
+
         document.querySelector("th:nth-child(3)").style.cursor = "pointer";
         document.querySelector("th:nth-child(3)").addEventListener("click", () => {
-            const sorted = [...allInstructors].sort((a, b) =>
-                a.expertise.localeCompare(b.expertise) * sortDirection
-            );
+            const sorted = [...allInstructors].sort((a, b) => a.expertise.localeCompare(b.expertise) * sortDirection);
             sortDirection *= -1;
             renderInstructors(sorted);
         });
-        document.querySelector("th:nth-child(1)").style.cursor = "pointer";
-        document.querySelector("th:nth-child(2)").addEventListener("click", () => {
-            const sorted = [...allInstructors].sort((a, b) =>
-                a.id.localeCompare(b.id) * sortDirection
-            );
-            sortDirection *= -1;
-            renderInstructors(sorted);
-        });
-        //Add & Edit instructor----------------------------------------------------------------------------
-        form.addEventListener("submit", function (e) {
+
+        form.addEventListener("submit", (e) => {
             e.preventDefault();
-            if (!validateExpertise() & !validateName()) return;
+            if (!validateName() | !validateExpertise()) return;
 
             const instructor = {
-                name: instuctorNameInput.value.trim(),
-                expertise: instructorExpertiseInput.value.trim()
+                name: nameInput.value.trim(),
+                expertise: expertiseInput.value.trim()
             };
 
             if (editId) {
                 fetch(`${apiUrl}/${editId}`, {
                     method: "PUT",
-                    headers: { 'Authorization': `Basic ${basicAuth}`, "Content-Type": "application/json" },
-
+                    headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(instructor)
                 }).then(() => {
                     fetchAndRenderInstructors();
-                    form.reset();
-                    editId = null;
-                    submitBtn.textContent = "Add Instructor";
                     closeModal();
-                    clearValidation();
                 });
             } else {
                 fetch(apiUrl, {
@@ -188,65 +162,43 @@
                     body: JSON.stringify(instructor)
                 }).then(() => {
                     fetchAndRenderInstructors();
-                    form.reset();
-                    clearValidation();
                     closeModal();
                 });
             }
         });
 
-        //Delete Instructor----------------------------------------------------------------------------
-
         function deleteInstructor(id) {
-            console.log("ID Received " + id);
             if (confirm("Are you sure you want to delete this instructor?")) {
-                fetch(`${apiUrl}/${id}`, {
-                    method: "DELETE"
-                })
-                    .then(() => {
-
-                        fetchAndRenderInstructors();
-                    })
+                fetch(`${apiUrl}/${id}`, { method: "DELETE" })
+                    .then(() => fetchAndRenderInstructors())
                     .catch(error => {
                         console.error("Error deleting instructor:", error);
-                        alert("An error occurred while deleting the instructor.");
+                        alert("An error occurred while deleting.");
                     });
             }
         }
 
-
-        //Set Fields for edit----------------------------------------------------------------------------
         function loadInstructorForEdit(id) {
             fetch(`${apiUrl}/${id}`)
                 .then(res => res.json())
                 .then(data => {
-                    instuctorNameInput.value = data.name;
-                    instructorExpertiseInput.value = data.expertise;
+                    nameInput.value = data.name;
+                    expertiseInput.value = data.expertise;
                     editId = id;
-                    submit.textContent = "Update Instructor";
-
-                    const myModal = new bootstrap.Modal(document.getElementById('addInstructorModal'));
-                    myModal.show();
+                    submitBtn.textContent = "Update Instructor";
+                    new bootstrap.Modal(document.getElementById('addInstructorModal')).show();
                 });
         }
 
-
-        //Fetch Instructor----------------------------------------------------------------------------
         function fetchAndRenderInstructors() {
-            fetch(`${apiUrl}`, {
-                method: 'GET',
-                headers: {
-
-                    'Content-Type': 'application/json'
-                }
-            })
+            fetch(apiUrl)
                 .then(res => res.json())
                 .then(data => {
                     allInstructors = data;
                     renderInstructors(data);
                 });
         }
-        //Display Instructor in table-----------------------------------------------------------------------------
+
         function renderInstructors(instructors) {
             const tbody = document.getElementById("instructorTableBody");
             tbody.innerHTML = "";
@@ -254,35 +206,26 @@
             instructors.forEach(inst => {
                 const row = document.createElement("tr");
                 row.innerHTML = `
-      <td>${inst.id}</td>
-      <td>${inst.name}</td>
-      <td>${inst.expertise}</td>
-      <td>
-        <button class="btn btn-sm btn-warning me-1" data-id="${inst.id}"><i class="fa fa-edit" ></i></button>
-        <button class="btn btn-sm btn-danger" data-id="${inst.id}"><i class="fa fa-trash"></i></button>
-       
-      </td>
-    `;
+                <td>${inst.id}</td>
+                <td>${inst.name}</td>
+                <td>${inst.expertise}</td>
+                <td>
+                    <button class="btn btn-sm btn-warning me-1" data-id="${inst.id}"><i class="fa fa-edit"></i></button>
+                    <button class="btn btn-sm btn-danger" data-id="${inst.id}"><i class="fa fa-trash"></i></button>
+                </td>
+            `;
                 tbody.appendChild(row);
             });
 
             document.querySelectorAll(".btn-warning").forEach(btn => {
-                btn.addEventListener("click", () => {
-                    const id = btn.getAttribute("data-id");
-                    loadInstructorForEdit(id);
-                });
+                btn.addEventListener("click", () => loadInstructorForEdit(btn.getAttribute("data-id")));
             });
 
             document.querySelectorAll(".btn-danger").forEach(btn => {
-                btn.addEventListener("click", () => {
-                    const id = btn.getAttribute("data-id");
-                    deleteInstructor(id);
-                });
+                btn.addEventListener("click", () => deleteInstructor(btn.getAttribute("data-id")));
             });
         }
+
         fetchAndRenderInstructors();
-
     })();
-
-    //End------------------------------------------------------------------------------
 </script>

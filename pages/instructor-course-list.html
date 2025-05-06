@@ -18,28 +18,39 @@
             <tr>
                 <th>Instructor ID</th>
                 <th>Instructor Name</th>
-
                 <th>Expertise</th>
                 <th>Courses Assigned</th>
             </tr>
         </thead>
         <tbody id="instructorCourseTableBody">
-            <!-- Data dynamically populated here -->
         </tbody>
     </table>
 </div>
 
+<div class="modal fade" id="coursesModal" tabindex="-1" aria-labelledby="coursesModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Courses Assigned</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="coursesModalBody">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     (() => {
-
         let allInstructors = [];
-        let allCourses = [];
         let sortDirection = 1;
         const apiUrl = "http://localhost:8080/api";
         const tbody = document.getElementById("instructorCourseTableBody");
         const searchInput = document.getElementById("instructorSearchInput");
 
-        //Searching---------------------------------------------------------------------------
+        // Searching
         searchInput.addEventListener("input", () => {
             const keyword = searchInput.value.toLowerCase();
             const filtered = allInstructors.filter(instr =>
@@ -49,7 +60,7 @@
             renderInstructorCourse(filtered);
         });
 
-        //Sorting---------------------------------------------------------------------------------
+        // Sorting
         document.querySelector("th:nth-child(2)").style.cursor = "pointer";
         document.querySelector("th:nth-child(2)").addEventListener("click", () => {
             const sorted = [...allInstructors].sort((a, b) =>
@@ -68,44 +79,62 @@
             renderInstructorCourse(sorted);
         });
 
-
-        //Fetch Instructor & Course---------------------------------------------------------------------------------
-
+        // Fetch Instructor Data
         function fetchInstructorCourse() {
-            Promise.all([
-                fetch(`${apiUrl}/instructors`).then(res => res.json()),
-                fetch(`${apiUrl}/courses`).then(res => res.json())
-            ])
-                .then(([instructorData, courseData]) => {
+            fetch(`${apiUrl}/instructors`)
+                .then(res => res.json())
+                .then(instructorData => {
                     allInstructors = instructorData;
-                    allCourses = courseData;
                     renderInstructorCourse(allInstructors);
                 })
-                .catch(err => console.error("Error loading data:", err));
+                .catch(err => console.error("Error loading instructors:", err));
         }
 
-        //Display Instructor & Course-----------------------------------------------------
-        function renderInstructorCourse(data) {
+        // Render Instructor Table Rows
+        function renderInstructorCourse(instructors) {
             tbody.innerHTML = "";
-            data.forEach(instructor => {
-                const assignedCourses = allCourses
-                    .filter(course => course.instructorid == instructor.id)
-                    .map(course => `<li>${course.title}</li>`)
-                    .join("") || "<li>No Courses</li>";
 
+            instructors.forEach(instructor => {
                 const row = `
-                    <tr>
-                        <td>${instructor.id}</td>
-                        <td>${instructor.name}</td>
-                        <td>${instructor.expertise || 'N/A'}</td>
-                        <td><ul class="mb-0 ps-3">${assignedCourses}</ul></td>
-                    </tr>
-                `;
+                <tr>
+                    <td>${instructor.id}</td>
+                    <td>${instructor.name}</td>
+                    <td>${instructor.expertise || 'N/A'}</td>
+                    <td>
+                        <button class="btn btn-primary btn-sm" onclick="showCoursesModal(${instructor.id}, '${instructor.name}')">
+                            View Courses
+                        </button>
+                    </td>
+                </tr>
+            `;
                 tbody.innerHTML += row;
             });
         }
 
+        // Show Modal with Course List
+        window.showCoursesModal = function (instructorId, instructorName) {
+            const modalBody = document.getElementById("coursesModalBody");
+            const modalTitle = document.querySelector("#coursesModal .modal-title");
+            modalTitle.textContent = `Courses Assigned to ${instructorName}`;
+
+            fetch(`${apiUrl}/instructors/courses/${instructorId}`)
+                .then(res => res.json())
+                .then(courses => {
+                    if (courses.length > 0) {
+                        modalBody.innerHTML = `<ul>${courses.map(title => `<li>${title}</li>`).join('')}</ul>`;
+                    } else {
+                        modalBody.innerHTML = `<p>No courses assigned.</p>`;
+                    }
+
+                    const modal = new bootstrap.Modal(document.getElementById('coursesModal'));
+                    modal.show();
+                })
+                .catch(err => {
+                    modalBody.innerHTML = `<p class="text-danger">Failed to load courses.</p>`;
+                    console.error("Error fetching courses:", err);
+                });
+        };
+
         fetchInstructorCourse();
     })();
-    //END----------------------------------------------------------
 </script>

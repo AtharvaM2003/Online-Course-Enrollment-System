@@ -28,97 +28,73 @@
 </div>
 
 <script>
-
     (() => {
         const apiUrl = "http://localhost:8080/api";
-        const courseUrl = `${apiUrl}/courses`;
-        const instructorUrl = `${apiUrl}/instructors`;
-        const enrollUrl = `${apiUrl}/enrollments`;
+        const reportUrl = `${apiUrl}/courses/coursereport`;
         const tbody = document.getElementById("courseEnrollBody");
         const searchInput = document.getElementById("courseSearch");
 
         let allCourses = [];
-        let instructorList = [];
-        let enrollCountObj = {};
         let sortDirection = 1;
 
-        // Searching-------------------------------------------------------
+        // Search
         searchInput.addEventListener("input", () => {
             const query = searchInput.value.toLowerCase();
             const filtered = allCourses.filter(course =>
-                course.title.toLowerCase().includes(query)
+                course.courseTitle.toLowerCase().includes(query)
             );
             renderCourseRows(filtered);
         });
 
-        // Sorting------------------------------------------------------------
+        // Sort by Course Title
         document.querySelector("th:nth-child(2)").style.cursor = "pointer";
         document.querySelector("th:nth-child(2)").addEventListener("click", () => {
             const sorted = [...allCourses].sort((a, b) =>
-                a.title.localeCompare(b.title) * sortDirection
+                a.courseTitle.localeCompare(b.courseTitle) * sortDirection
             );
             sortDirection *= -1;
             renderCourseRows(sorted);
         });
 
+        // Sort by Instructor Name
         document.querySelector("th:nth-child(3)").style.cursor = "pointer";
         document.querySelector("th:nth-child(3)").addEventListener("click", () => {
-            const sorted = [...instructorList].sort((a, b) =>
-                a.name.localeCompare(b.name) * sortDirection
+            const sorted = [...allCourses].sort((a, b) =>
+                a.instructorName.localeCompare(b.instructorName) * sortDirection
             );
             sortDirection *= -1;
             renderCourseRows(sorted);
         });
 
-
-
-        // Fetch course, enrollments and instructor-------------------------------
-        function fetchCourseEnrollmentData() {
-            Promise.all([
-                fetch(courseUrl),
-                fetch(enrollUrl),
-                fetch(instructorUrl)
-            ])
-                .then(responses => Promise.all(responses.map(res => res.json())))
-                .then(([courseData, enrollData, instructorData]) => {
-                    allCourses = courseData;
-                    instructorList = instructorData;
-
-                    enrollCountObj = {};
-                    enrollData.forEach(enroll => {
-                        const cid = enroll.courseid;
-                        enrollCountObj[cid] = (enrollCountObj[cid] || 0) + 1;
-                    });
-
+        // Fetch course report
+        function fetchCourseEnrollmentReport() {
+            fetch(reportUrl)
+                .then(res => res.json())
+                .then(data => {
+                    allCourses = data;
                     renderCourseRows(allCourses);
                 })
-                .catch(err => {
-                    console.error("Error while loading data:", err);
-                });
+                .catch(err => console.error("Failed to load report:", err));
         }
 
-        // Display Course wise total enrollments------------------------------------
+        // Render course rows
         function renderCourseRows(courses) {
             tbody.innerHTML = "";
             courses.forEach(course => {
                 const tr = document.createElement("tr");
-
-                const instructor = instructorList.find(inst => inst.id === course.instructorid);
-                const instructorName = instructor ? instructor.name : "N/A";
-                const enrollCount = enrollCountObj[course.id] || 0;
-
                 tr.innerHTML = `
-                <td>${course.id}</td>
-                <td>${course.title}</td>
-                <td>${instructorName}</td>
-                <td>${enrollCount}</td>
+                <td>${course.courseId}</td>
+                <td>${course.courseTitle}</td>
+                <td>${course.instructorName}</td>
+                <td>${course.totalEnrollments}</td>
             `;
-
                 tbody.appendChild(tr);
             });
         }
-        fetchCourseEnrollmentData();
+
+        fetchCourseEnrollmentReport();
     })();
+
     //END-----------------------------------------------------------
 
 </script>

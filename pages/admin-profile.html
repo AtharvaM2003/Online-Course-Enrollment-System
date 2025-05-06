@@ -149,23 +149,29 @@
 
         //------------------------------------------------------------------
         function updateAdmin() {
+            const adminName = adminNameInput.value.trim();
+
+            // Set user name in session storage
+            sessionStorage.setItem("userName", adminName);
+
             const admin = {
-                name: adminNameInput.value.trim(),
+                name: adminName,
                 phone: adminPhoneInput.value.trim(),
                 email: adminEmailInput.value,
                 password: adminPassInput.value.trim(),
                 usertype: "admin"
             };
+
             fetch(`${apiUrl}/users/${getUserId()}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(admin)
             }).then(() => {
-
                 loadAdminForEdit();
                 clearValidation();
             });
         }
+
         //----------------------------------------------------------------
         function clearValidation() {
             adminNameInput.classList.remove("is-invalid");

@@ -38,39 +38,22 @@ function loadPage(page) {
 
 function renderAdminDashboardCharts() {
 
-    const apiUrl = "http://localhost:8080/api";
-    const courseUrl = `${apiUrl}/courses`;
-    const instructorUrl = `${apiUrl}/instructors`;
-    const enrollUrl = `${apiUrl}/enrollments`;
+    const reportUrl = `http://localhost:8080/api/courses/coursereport`;
 
-    //Fetch Course wise Enrollments--------------------------------------
+    // Fetch Course-wise Enrollments and Render Bar Chart
     function renderPopularCoursesChart() {
-        Promise.all([
-            fetch(courseUrl),
-            fetch(enrollUrl),
-            fetch(instructorUrl)
-        ])
-            .then(([courseRes, enrollRes, instructorRes]) => Promise.all([
-                courseRes.json(),
-                enrollRes.json(),
-                instructorRes.json()
-            ]))
-            .then(([courseData, enrollData]) => {
-                const enrollCountObj = {};
-                enrollData.forEach(enroll => {
-                    const cid = enroll.courseid;
-                    enrollCountObj[cid] = (enrollCountObj[cid] || 0) + 1;
-                });
-
+        fetch(reportUrl)
+            .then(res => res.json())
+            .then(data => {
                 const labels = [];
-                const data = [];
+                const enrollments = [];
 
-                courseData.forEach(course => {
-                    labels.push(course.title);
-                    data.push(enrollCountObj[course.id] || 0);
+                data.forEach(course => {
+                    labels.push(course.courseTitle);
+                    enrollments.push(course.totalEnrollments || 0);
                 });
 
-                //Dynamic Bar Chart---------------------------------------------
+                // Dynamic Bar Chart
                 const ctx1 = document.getElementById('courseBarChart')?.getContext('2d');
                 if (ctx1) {
                     new Chart(ctx1, {
@@ -79,7 +62,7 @@ function renderAdminDashboardCharts() {
                             labels: labels,
                             datasets: [{
                                 label: 'Students',
-                                data: data,
+                                data: enrollments,
                                 backgroundColor: [
                                     '#0d6efd', '#198754', '#ffc107', '#dc3545', '#6f42c1', '#20c997', '#fd7e14'
                                 ],
@@ -105,47 +88,18 @@ function renderAdminDashboardCharts() {
                 console.error("Error loading chart data:", error);
             });
     }
+
     renderPopularCoursesChart();
 
 
     //Fetch Enrollments, Course, Instructor----------------------
     function renderStudentsPerInstructorChart() {
-        Promise.all([
-            fetch(enrollUrl),
-            fetch(courseUrl),
-            fetch(instructorUrl)
-        ])
-            .then(([enrollRes, courseRes, instructorRes]) => Promise.all([
-                enrollRes.json(),
-                courseRes.json(),
-                instructorRes.json()
-            ]))
-            .then(([enrollData, courseData, instructorData]) => {
-                const courseInstructorMap = {};
-                courseData.forEach(course => {
-                    courseInstructorMap[course.id] = course.instructorid;
-                });
-                allInstructors = instructorData;
+        fetch('http://localhost:8080/api/instructors/iwisestudent')
+            .then(res => res.json())
+            .then(data => {
+                const labels = data.map(entry => entry.instructorName);
+                const counts = data.map(entry => entry.studentCount);
 
-                const instructorStudentCount = {};
-                enrollData.forEach(enroll => {
-                    const courseId = enroll.courseid;
-                    const instructorId = courseInstructorMap[courseId];
-                    if (instructorId) {
-                        instructorStudentCount[instructorId] = (instructorStudentCount[instructorId] || 0) + 1;
-                    }
-                });
-
-                const labels = [];
-                const data = [];
-
-                allInstructors.forEach(instructor => {
-                    const name = instructor.name;
-                    labels.push(name);
-                    data.push(instructorStudentCount[instructor.id] || 0);
-                });
-
-                // Dynamic Pie Chart
                 const ctx2 = document.getElementById('instructorPieChart')?.getContext('2d');
                 if (ctx2) {
                     new Chart(ctx2, {
@@ -153,7 +107,7 @@ function renderAdminDashboardCharts() {
                         data: {
                             labels: labels,
                             datasets: [{
-                                data: data,
+                                data: counts,
                                 backgroundColor: [
                                     '#0dcaf0', '#6c757d', '#ffc107', '#198754', '#dc3545',
                                     '#6610f2', '#d63384', '#fd7e14', '#20c997', '#0d6efd'
