@@ -16,45 +16,23 @@
         const apiUrl = "http://localhost:8080/api";
         const allEnrolledCourses = document.getElementById('enrolledCourseList');
 
-        let allInstructors = [];
-        let allCourses = [];
-
         function getUserId() {
             return sessionStorage.getItem("userId");
         }
 
-        //Fetch Enrollements, Courses, Instructors--------------------------------------------
+        // Fetch enrolled courses using new endpoint --------------------------------------------
         function fetchEnrolledCourses() {
-            Promise.all([
-                fetch(`${apiUrl}/instructors`).then(res => res.json()),
-                fetch(`${apiUrl}/courses`).then(res => res.json()),
-                fetch(`${apiUrl}/enrollments/user/${getUserId()}`).then(res => res.json())
-            ])
-                .then(([instructorData, courseData, enrollmentData]) => {
-                    allInstructors = instructorData;
-                    allCourses = courseData;
-
-                    const enrolledCourses = enrollmentData.map(enroll => {
-                        const course = allCourses.find(c => c.id === enroll.courseid);
-                        const instructor = allInstructors.find(i => i.id === (course ? course.instructorid : null));
-                        return {
-                            title: course ? course.title : "N/A",
-                            description: course ? course.description : "N/A",
-                            fees: course ? course.fees : "N/A",
-                            courseId: course ? (course.courseid || course.id) : "N/A",
-                            instructorName: instructor ? instructor.name : "N/A",
-                            enrolledOn: enroll.enrollmentdate
-                        };
-                    });
-
-                    renderEnrolledCourses(enrolledCourses);
+            fetch(`${apiUrl}/courses/enrolled/${getUserId()}`)
+                .then(res => res.json())
+                .then(courses => {
+                    renderEnrolledCourses(courses);
                 })
                 .catch(error => {
                     console.error('Error loading enrolled courses:', error);
                 });
         }
 
-        //Display Enrolled Courses----------------------------------------------------
+        // Display enrolled courses ------------------------------------------------------------
         function renderEnrolledCourses(courses) {
             allEnrolledCourses.innerHTML = "";
             courses.forEach(course => {
@@ -62,19 +40,20 @@
                 card.className = "col-md-4 mb-4 course-card";
                 card.setAttribute('data-price', course.fees);
                 card.innerHTML = `
-                <div class="card h-100 shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title">${course.title}</h5>
-                        <p class="mb-1"><strong>Instructor:</strong> ${course.instructorName}</p>
-                        <p class="mb-1"><strong>Enrolled On:</strong> ${formatDate(course.enrolledOn)}</p>
-                        <p class="mb-2"><strong>Price:</strong> ₹${course.fees}</p>
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">${course.courseTitle}</h5>
+                            <p class="mb-1"><strong>Instructor:</strong> ${course.instructorName}</p>
+                            <p class="mb-1"><strong>Enrolled On:</strong> ${formatDate(course.enrollmentDate)}</p>
+                            <p class="mb-2"><strong>Price:</strong> ₹${course.courseFees}</p>
+                        </div>
                     </div>
-                </div>
-            `;
+                `;
                 allEnrolledCourses.appendChild(card);
             });
         }
-        //Date for show in Card--------------------------------------------
+
+        // Format enrollment date for display --------------------------------------------------
         function formatDate(dateStr) {
             const options = { day: '2-digit', month: 'short', year: 'numeric' };
             const date = new Date(dateStr);
@@ -83,5 +62,4 @@
 
         fetchEnrolledCourses();
     })();
-    //END-------------------------------------------------------------
 </script>

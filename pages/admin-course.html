@@ -148,7 +148,7 @@
 
         document.querySelector("th:nth-child(4)").style.cursor = "pointer";
         document.querySelector("th:nth-child(4)").addEventListener("click", () => {
-            const sorted = [...allCourses].sort((a, b) => ((a.instructorid) - (b.instructorid)) * sortDirection);
+            const sorted = [...allCourses].sort((a, b) => a.instructorName.localeCompare(b.instructorName) * sortDirection);
             sortDirection *= -1;
             renderCourses(sorted);
         });
@@ -210,7 +210,7 @@
                     <td>${cour.id}</td>
                     <td>${cour.title}</td>
                     <td>${cour.description}</td>
-                    <td>${instructorMap[cour.instructorid] || "Unknown"}</td>
+                    <td>${cour.instructorName}</td>
                     <td>${cour.fees}</td>
                     <td>
                         <button class="btn btn-sm btn-warning me-1" data-id="${cour.id}">

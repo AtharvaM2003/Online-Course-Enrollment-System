@@ -45,15 +45,23 @@ function renderAdminDashboardCharts() {
         fetch(reportUrl)
             .then(res => res.json())
             .then(data => {
-                const labels = [];
-                const enrollments = [];
+                const courseMap = new Map();
 
                 data.forEach(course => {
-                    labels.push(course.courseTitle);
-                    enrollments.push(course.totalEnrollments || 0);
+                    const title = course.courseTitle;
+                    const count = course.totalEnrollments || 0;
+
+                    // If title already exists, add to the count (optional)
+                    if (courseMap.has(title)) {
+                        courseMap.set(title, courseMap.get(title) + count);
+                    } else {
+                        courseMap.set(title, count);
+                    }
                 });
 
-                // Dynamic Bar Chart
+                const labels = Array.from(courseMap.keys());
+                const enrollments = Array.from(courseMap.values());
+
                 const ctx1 = document.getElementById('courseBarChart')?.getContext('2d');
                 if (ctx1) {
                     new Chart(ctx1, {
@@ -134,43 +142,23 @@ function renderAdminDashboardCharts() {
 
 // Student Dashboard Chart 
 function renderStudentDashboardCharts() {
-    const apiUrl = "http://localhost:8080/api";
-    const courseUrl = `${apiUrl}/courses`;
-    const instructorUrl = `${apiUrl}/instructors`;
-    const enrollUrl = `${apiUrl}/enrollments`;
-    function loadTopCoursesChart() {
-        Promise.all([
-            fetch(courseUrl),
-            fetch(enrollUrl),
-            fetch(instructorUrl)
-        ])
-            .then(([courseRes, enrollRes, instructorRes]) =>
-                Promise.all([
-                    courseRes.json(),
-                    enrollRes.json(),
-                    instructorRes.json()
-                ])
-            )
-            .then(([courseData, enrollData]) => {
-                const enrollCountObj = {};
-                enrollData.forEach(enroll => {
-                    const cid = enroll.courseid;
-                    enrollCountObj[cid] = (enrollCountObj[cid] || 0) + 1;
+
+    const reportUrl = `http://localhost:8080/api/courses/coursereport`;
+
+    function renderPopularCoursesChart() {
+        fetch(reportUrl)
+            .then(res => res.json())
+            .then(data => {
+                const labels = [];
+                const enrollments = [];
+
+                data.forEach(course => {
+                    labels.push(course.courseTitle);
+                    enrollments.push(course.totalEnrollments || 0);
                 });
 
-                const coursesWithEnroll = courseData.map(course => ({
-                    title: course.title,
-                    enrollCount: enrollCountObj[course.id] || 0
-                }));
-
-                coursesWithEnroll.sort((a, b) => b.enrollCount - a.enrollCount);
-
-                const topCourses = coursesWithEnroll.slice(0, 5);
-
-                const labels = topCourses.map(c => c.title);
-                const data = topCourses.map(c => c.enrollCount);
-
-                const ctx1 = document.getElementById('popularCourse')?.getContext('2d');
+                // Dynamic Bar Chart
+                const ctx1 = document.getElementById('courseBarChart')?.getContext('2d');
                 if (ctx1) {
                     new Chart(ctx1, {
                         type: 'bar',
@@ -178,16 +166,18 @@ function renderStudentDashboardCharts() {
                             labels: labels,
                             datasets: [{
                                 label: 'Students',
-                                data: data,
+                                data: enrollments,
                                 backgroundColor: [
-                                    '#0d6efd', '#198754', '#ffc107', '#dc3545', '#6f42c1'
+                                    '#0d6efd', '#198754', '#ffc107', '#dc3545', '#6f42c1', '#20c997', '#fd7e14'
                                 ],
                                 borderWidth: 1
                             }]
                         },
                         options: {
                             responsive: true,
-                            plugins: { legend: { display: false } },
+                            plugins: {
+                                legend: { display: false }
+                            },
                             scales: {
                                 y: {
                                     beginAtZero: true,
@@ -199,12 +189,14 @@ function renderStudentDashboardCharts() {
                 }
             })
             .catch(error => {
-                console.error("Error loading top courses chart:", error);
+                console.error("Error loading chart data:", error);
             });
     }
 
+    renderPopularCoursesChart();
 
-    loadTopCoursesChart();
+
+
 
 
 }

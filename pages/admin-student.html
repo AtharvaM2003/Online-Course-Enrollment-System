@@ -79,8 +79,7 @@
         </div>
     </div>
 </div>
-<script>
-    (() => {
+<script>(() => {
         let allStudents = [];
         let editId = null;
         let sortDirection = 1;
@@ -91,23 +90,18 @@
         const studentEmailInput = document.getElementById("studentEmail");
         const studentPhoneInput = document.getElementById("studentPhone");
         const studentPassInput = document.getElementById("studentPassword");
-        const submit = document.getElementById("submitBtn");
-        let searchInput = document.createElement("input");
-
-
-
+        const submitBtn = document.getElementById("submitBtn");
         const togglePassword = document.getElementById('togglePassword');
 
-        //Show Password------------------------------------------------------
+        // Show/Hide Password
         togglePassword.addEventListener('click', function () {
             const type = studentPassInput.type === 'password' ? 'text' : 'password';
             studentPassInput.type = type;
-
             this.classList.toggle('fa-eye');
             this.classList.toggle('fa-eye-slash');
         });
 
-        //Sorting here--------------------------------------------------------------
+        // Sorting by Name
         document.querySelector("th:nth-child(2)").style.cursor = "pointer";
         document.querySelector("th:nth-child(2)").addEventListener("click", () => {
             const sorted = [...allStudents].sort((a, b) => a.name.localeCompare(b.name) * sortDirection);
@@ -115,6 +109,7 @@
             renderStudents(sorted);
         });
 
+        // Sorting by Email
         document.querySelector("th:nth-child(3)").style.cursor = "pointer";
         document.querySelector("th:nth-child(3)").addEventListener("click", () => {
             const sorted = [...allStudents].sort((a, b) => a.email.localeCompare(b.email) * sortDirection);
@@ -122,16 +117,16 @@
             renderStudents(sorted);
         });
 
+        // Sorting by Phone
         document.querySelector("th:nth-child(4)").style.cursor = "pointer";
         document.querySelector("th:nth-child(4)").addEventListener("click", () => {
-            const sorted = [...allStudents].sort((a, b) => ((a.phone) - (b.phone)) * sortDirection);
+            const sorted = [...allStudents].sort((a, b) => (a.phone - b.phone) * sortDirection);
             sortDirection *= -1;
             renderStudents(sorted);
         });
 
-        let filtered = allStudents.filter(c => c.name.toLowerCase().includes(searchTerm) || c.email.toLowerCase().includes(searchTerm) || String(c.phone).includes(String(searchTerm)));
-
-        // Search bar here------------------------------------------------------------
+        // Search Input
+        const searchInput = document.createElement("input");
         searchInput.setAttribute("type", "text");
         searchInput.setAttribute("placeholder", "Search by Students...");
         searchInput.classList.add("form-control", "mb-3");
@@ -139,47 +134,42 @@
 
         searchInput.addEventListener("input", () => {
             const searchTerm = searchInput.value.toLowerCase();
-            let filtered = allStudents.filter(c => c.name.toLowerCase().includes(searchTerm) || c.email.toLowerCase().includes(searchTerm) || String(c.phone).includes(String(searchTerm)));
-
+            const filtered = allStudents.filter(c =>
+                c.name.toLowerCase().includes(searchTerm) ||
+                c.email.toLowerCase().includes(searchTerm) ||
+                String(c.phone).includes(searchTerm)
+            );
             renderStudents(filtered);
         });
 
-
-
-
-        //Fetch  Student-------------------------------------------------------
-
+        // Fetch Students
         function fetchAndRenderStudent() {
-            fetch(`${apiUrl}/users`)
+            fetch(`${apiUrl}/users/allstudents`)
                 .then(res => res.json())
                 .then(users => {
-                    allStudents = users.filter(user => user.usertype === "student");
+                    allStudents = users;
                     renderStudents(allStudents);
                 });
         }
 
-
-        //Display Fetched  in table--------------------------------------------------------
+        // Render Students in Table
         function renderStudents(students) {
             const tbody = document.getElementById("studentTableBody");
             tbody.innerHTML = "";
 
             students.forEach(stud => {
-                if (stud.usertype === "student") {
-                    const row = document.createElement("tr");
-                    row.innerHTML = `
-                    <td>${stud.id}</td>
-                    <td>${stud.name}</td>
-                    <td>${stud.email}</td>
-                    <td>${stud.phone}</td>
-                    <td>
-                    <button class="btn btn-sm btn-warning me-1" data-id="${stud.id}"><i class="fa fa-edit" ></i></button>
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                <td>${stud.id}</td>
+                <td>${stud.name}</td>
+                <td>${stud.email}</td>
+                <td>${stud.phone}</td>
+                <td>
+                    <button class="btn btn-sm btn-warning me-1" data-id="${stud.id}"><i class="fa fa-edit"></i></button>
                     <button class="btn btn-sm btn-danger" data-id="${stud.id}"><i class="fa fa-trash"></i></button>
-       
-                    </td>
-                    `;
-                    tbody.appendChild(row);
-                }
+                </td>
+            `;
+                tbody.appendChild(row);
             });
 
             document.querySelectorAll(".btn-warning").forEach(btn => {
@@ -195,10 +185,11 @@
                     deleteStudent(id);
                 });
             });
-
         }
+
         fetchAndRenderStudent();
-        //Load in Fields to edit-----------------------------------------------------------------------------
+
+        // Load Student Data into Form for Edit
         function loadStudentForEdit(id) {
             fetch(`${apiUrl}/users/${id}`)
                 .then(res => res.json())
@@ -208,71 +199,53 @@
                     studentPhoneInput.value = data.phone;
                     studentPassInput.value = data.password;
                     editId = id;
-                    submit.textContent = "Update Student";
+                    submitBtn.textContent = "Update Student";
 
                     const myModal = new bootstrap.Modal(document.getElementById('addStudentModal'));
                     myModal.show();
                 });
         }
 
-        //Delete Data-----------------------------------------------------------------------------
-
+        // Delete Student
         function deleteStudent(id) {
-            console.log("ID Received " + id);
             if (confirm("Are you want to delete this student ?")) {
                 fetch(`${apiUrl}/users/${id}`, {
                     method: "DELETE"
                 }).then(() => fetchAndRenderStudent());
             }
         }
-        //Add and Edit Student-----------------------------------------------------------------------------
+
+        // Add/Edit Student
         form.addEventListener("submit", function (e) {
             e.preventDefault();
 
             const student = {
                 name: studentNameInput.value.trim(),
                 email: studentEmailInput.value.trim(),
-                phone: String(studentPhoneInput.value.trim()),
+                phone: studentPhoneInput.value.trim(),
                 password: studentPassInput.value.trim(),
-                usertype: "student"
-
+                usertype: "USER"
             };
+
             if (validateStudentName() & validateMobile() & validateEmail() & validatePassword()) {
+                const method = editId ? "PUT" : "POST";
+                const url = editId ? `${apiUrl}/users/${editId}` : `${apiUrl}/users`;
 
-
-                if (editId) {
-                    fetch(`${apiUrl}/users/${editId}`, {
-                        method: "PUT",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(student)
-                    }).then(() => {
-                        clearValidation();
-                        fetchAndRenderStudent();
-                        form.reset();
-                        editId = null;
-                        submitBtn.textContent = "Add Student";
-
-                        closeModal();
-
-                    });
-                } else {
-                    fetch(`${apiUrl}/users`, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(student)
-                    }).then(() => {
-                        clearValidation();
-                        fetchAndRenderStudent();
-                        form.reset();
-
-                        closeModal();
-
-                    });
-                }
+                fetch(url, {
+                    method,
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(student)
+                }).then(() => {
+                    clearValidation();
+                    fetchAndRenderStudent();
+                    editId = null;
+                    submitBtn.textContent = "Add Student";
+                    closeModal();
+                });
             }
         });
 
-        //Clear Validations-----------------------------------------------------------------------------
+        // Clear Validation Styles
         function clearValidation() {
             studentNameInput.classList.remove("is-invalid", "is-valid");
             studentEmailInput.classList.remove("is-invalid", "is-valid");
@@ -280,9 +253,7 @@
             studentPassInput.classList.remove("is-invalid", "is-valid");
         }
 
-        //-----------------------------------VALIDATIONS------------------------------------------
-
-        //Validating Username
+        // Validations
         function validateStudentName() {
             if (studentNameInput.value.trim().length >= 5) {
                 studentNameInput.classList.add("is-valid");
@@ -295,7 +266,6 @@
             }
         }
 
-        //Validating Pass
         function validatePassword() {
             const pass = studentPassInput.value;
             const passRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}$/;
@@ -311,15 +281,11 @@
             }
         }
 
-
-        //validating Email
         function validateEmail() {
             if (studentEmailInput.value && studentEmailInput.checkValidity()) {
                 studentEmailInput.classList.add("is-valid");
                 studentEmailInput.classList.remove("is-invalid");
-
                 return true;
-
             } else {
                 studentEmailInput.classList.add("is-invalid");
                 studentEmailInput.classList.remove("is-valid");
@@ -327,7 +293,6 @@
             }
         }
 
-        //Validating Mobile
         function validateMobile() {
             const mobileRegex = /^[789]\d{9}$/;
             if (mobileRegex.test(studentPhoneInput.value.trim())) {
@@ -340,6 +305,8 @@
                 return false;
             }
         }
+
+        // Close Modal
         function closeModal() {
             const modalElement = document.getElementById('addStudentModal');
             let modalInstance = bootstrap.Modal.getInstance(modalElement);
@@ -350,8 +317,5 @@
             form.reset();
             clearValidation();
         }
-
-
-        //END-------------------------------------------------------------------------------
     })();
 </script>

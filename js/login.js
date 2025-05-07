@@ -29,7 +29,7 @@ function verify() {
                 sessionStorage.setItem("userName", user.name);
                 sessionStorage.setItem("userType", user.usertype);
 
-                if (user.usertype === "admin") {
+                if (user.usertype === "ADMIN") {
                     window.location.href = "../admin.html";
                 } else {
                     window.location.href = "../student.html";
