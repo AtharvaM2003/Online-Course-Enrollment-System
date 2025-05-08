@@ -1,13 +1,19 @@
 
+document.addEventListener("DOMContentLoaded", function () {
+    loadPage('admin-dashboard.html');
+});
+
 function loadPage(page) {
     if (page) {
         sessionStorage.setItem('currentPage', page);
     }
+
     fetch(`pages/${page}`)
         .then(response => response.text())
         .then(data => {
             const container = document.getElementById('main-content');
             container.innerHTML = data;
+
             const scripts = container.querySelectorAll('script');
             scripts.forEach(script => {
                 const newScript = document.createElement('script');
@@ -19,13 +25,14 @@ function loadPage(page) {
                 document.body.appendChild(newScript);
                 script.remove();
             });
+
             setTimeout(() => {
                 if (page === "admin-dashboard.html") {
                     renderAdminDashboardCharts();
                 } else if (page === "student-dashboard.html") {
                     renderStudentDashboardCharts();
                 }
-            }, 100);
+            }, 200);
         })
         .catch(err => {
             document.getElementById('main-content').innerHTML =
@@ -34,173 +41,144 @@ function loadPage(page) {
         });
 }
 
+// Utility: Generate random colors
+function getRandomColors(count) {
+    const colors = [];
+    for (let i = 0; i < count; i++) {
+        const r = Math.floor(Math.random() * 255);
+        const g = Math.floor(Math.random() * 255);
+        const b = Math.floor(Math.random() * 255);
+        colors.push(`rgba(${r}, ${g}, ${b}, 0.7)`);
+    }
+    return colors;
+}
 
-
+// Admin Charts
 function renderAdminDashboardCharts() {
+    renderPopularCoursesChart();
+    renderStudentsPerInstructorChart();
+}
 
+function renderPopularCoursesChart() {
     const reportUrl = `http://localhost:8080/api/courses/coursereport`;
 
-    // Fetch Course-wise Enrollments and Render Bar Chart
-    function renderPopularCoursesChart() {
-        fetch(reportUrl)
-            .then(res => res.json())
-            .then(data => {
-                const courseMap = new Map();
+    fetch(reportUrl)
+        .then(res => res.json())
+        .then(data => {
+            const courseMap = new Map();
 
-                data.forEach(course => {
-                    const title = course.courseTitle;
-                    const count = course.totalEnrollments || 0;
+            data.forEach(course => {
+                const title = course.courseTitle;
+                const count = course.totalEnrollments || 0;
+                courseMap.set(title, (courseMap.get(title) || 0) + count);
+            });
 
-                    // If title already exists, add to the count (optional)
-                    if (courseMap.has(title)) {
-                        courseMap.set(title, courseMap.get(title) + count);
-                    } else {
-                        courseMap.set(title, count);
+            const labels = Array.from(courseMap.keys());
+            const enrollments = Array.from(courseMap.values());
+            const colors = getRandomColors(labels.length);
+
+            const ctx1 = document.getElementById('courseBarChart')?.getContext('2d');
+            if (ctx1) {
+                new Chart(ctx1, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Students',
+                            data: enrollments,
+                            backgroundColor: colors,
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: { stepSize: 1 }
+                            }
+                        }
                     }
                 });
-
-                const labels = Array.from(courseMap.keys());
-                const enrollments = Array.from(courseMap.values());
-
-                const ctx1 = document.getElementById('courseBarChart')?.getContext('2d');
-                if (ctx1) {
-                    new Chart(ctx1, {
-                        type: 'bar',
-                        data: {
-                            labels: labels,
-                            datasets: [{
-                                label: 'Students',
-                                data: enrollments,
-                                backgroundColor: [
-                                    '#0d6efd', '#198754', '#ffc107', '#dc3545', '#6f42c1', '#20c997', '#fd7e14'
-                                ],
-                                borderWidth: 1
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            plugins: {
-                                legend: { display: false }
-                            },
-                            scales: {
-                                y: {
-                                    beginAtZero: true,
-                                    ticks: { stepSize: 1 }
-                                }
-                            }
-                        }
-                    });
-                }
-            })
-            .catch(error => {
-                console.error("Error loading chart data:", error);
-            });
-    }
-
-    renderPopularCoursesChart();
-
-
-    //Fetch Enrollments, Course, Instructor----------------------
-    function renderStudentsPerInstructorChart() {
-        fetch('http://localhost:8080/api/instructors/iwisestudent')
-            .then(res => res.json())
-            .then(data => {
-                const labels = data.map(entry => entry.instructorName);
-                const counts = data.map(entry => entry.studentCount);
-
-                const ctx2 = document.getElementById('instructorPieChart')?.getContext('2d');
-                if (ctx2) {
-                    new Chart(ctx2, {
-                        type: 'pie',
-                        data: {
-                            labels: labels,
-                            datasets: [{
-                                data: counts,
-                                backgroundColor: [
-                                    '#0dcaf0', '#6c757d', '#ffc107', '#198754', '#dc3545',
-                                    '#6610f2', '#d63384', '#fd7e14', '#20c997', '#0d6efd'
-                                ]
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            plugins: {
-                                legend: { position: 'bottom' }
-                            }
-                        }
-                    });
-                }
-            })
-            .catch(error => {
-                console.error("Error loading students per instructor chart:", error);
-            });
-    }
-
-    renderStudentsPerInstructorChart();
-
+            }
+        })
+        .catch(error => {
+            console.error("Error loading chart data:", error);
+        });
 }
 
-// Student Dashboard Chart 
-function renderStudentDashboardCharts() {
+function renderStudentsPerInstructorChart() {
+    fetch('http://localhost:8080/api/instructors/iwisestudent')
+        .then(res => res.json())
+        .then(data => {
+            const labels = data.map(entry => entry.instructorName);
+            const counts = data.map(entry => entry.studentCount);
+            const colors = getRandomColors(labels.length);
 
-    const reportUrl = `http://localhost:8080/api/courses/coursereport`;
-
-    function renderPopularCoursesChart() {
-        fetch(reportUrl)
-            .then(res => res.json())
-            .then(data => {
-                const labels = [];
-                const enrollments = [];
-
-                data.forEach(course => {
-                    labels.push(course.courseTitle);
-                    enrollments.push(course.totalEnrollments || 0);
+            const ctx2 = document.getElementById('instructorPieChart')?.getContext('2d');
+            if (ctx2) {
+                new Chart(ctx2, {
+                    type: 'pie',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            data: counts,
+                            backgroundColor: colors
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { position: 'bottom' }
+                        }
+                    }
                 });
-
-                // Dynamic Bar Chart
-                const ctx1 = document.getElementById('courseBarChart')?.getContext('2d');
-                if (ctx1) {
-                    new Chart(ctx1, {
-                        type: 'bar',
-                        data: {
-                            labels: labels,
-                            datasets: [{
-                                label: 'Students',
-                                data: enrollments,
-                                backgroundColor: [
-                                    '#0d6efd', '#198754', '#ffc107', '#dc3545', '#6f42c1', '#20c997', '#fd7e14'
-                                ],
-                                borderWidth: 1
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            plugins: {
-                                legend: { display: false }
-                            },
-                            scales: {
-                                y: {
-                                    beginAtZero: true,
-                                    ticks: { stepSize: 1 }
-                                }
-                            }
-                        }
-                    });
-                }
-            })
-            .catch(error => {
-                console.error("Error loading chart data:", error);
-            });
-    }
-
-    renderPopularCoursesChart();
-
-
-
-
-
+            }
+        })
+        .catch(error => {
+            console.error("Error loading students per instructor chart:", error);
+        });
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-    loadPage('admin-dashboard.html');
-});
+// Student Charts
+function renderStudentDashboardCharts() {
+    const reportUrl = `http://localhost:8080/api/courses/findTop5Courses`;
+
+    fetch(reportUrl)
+        .then(res => res.json())
+        .then(data => {
+            const labels = data.map(course => course.courseTitle);
+            const enrollments = data.map(course => course.totalEnrollments || 0);
+            const colors = getRandomColors(labels.length);
+
+            const ctx1 = document.getElementById('popularCourse')?.getContext('2d');
+            if (ctx1) {
+                new Chart(ctx1, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Students',
+                            data: enrollments,
+                            backgroundColor: colors,
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: { stepSize: 1 }
+                            }
+                        }
+                    }
+                });
+            }
+        })
+        .catch(error => {
+            console.error("Error loading top courses chart:", error);
+        });
+}
