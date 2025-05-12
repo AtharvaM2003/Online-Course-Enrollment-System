@@ -21,16 +21,19 @@
                 <div class="mt-4">
                     <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editProfileModal">Edit
                         Profile</button>
+                    <button class="btn btn-outline-primary ms-2" data-bs-toggle="modal"
+                        data-bs-target="#setPasswordModal">Set New Password</button>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
+<!-- Edit Profile Modal -->
 <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form novalidate>
+            <form id="editProfileForm" novalidate>
                 <div class="modal-header">
                     <h5 class="modal-title" id="editProfileModalLabel">Edit Profile</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -44,13 +47,6 @@
                         <label for="editPhone" class="form-label">Phone</label>
                         <input type="tel" class="form-control" id="editPhone" required>
                     </div>
-                    <div class="mb-3" style="position: relative;">
-                        <label for="editPass" class="form-label" style="position: relative;">Password</label>
-                        <input type="password" class="form-control" id="editPass" required>
-                        <i id="togglePassword" class="fa-solid fa-eye"
-                            style="position: absolute; top: 60%; right: 15px;  cursor: pointer; ">
-                        </i>
-                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-success">Save Changes</button>
@@ -61,8 +57,33 @@
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Set Password Modal -->
+<div class="modal fade" id="setPasswordModal" tabindex="-1" aria-labelledby="setPasswordModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="passwordForm" novalidate>
+                <div class="modal-header">
+                    <h5 class="modal-title" id="setPasswordModalLabel">Set New Password</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3" style="position: relative;">
+                        <label for="newPassword" class="form-label">New Password</label>
+                        <input type="password" class="form-control" id="newPassword" required>
+                        <i id="toggleNewPassword" class="fa-solid fa-eye"
+                            style="position: absolute; top: 60%; right: 15px; cursor: pointer;"></i>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Update Password</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     (() => {
         const apiUrl = "http://localhost:8080/api";
@@ -72,25 +93,19 @@
 
         const editNameInput = document.getElementById("editName");
         const editPhoneInput = document.getElementById("editPhone");
-        const editPassInput = document.getElementById("editPass");
 
-        const form = document.querySelector("form");
+        const editProfileForm = document.getElementById("editProfileForm");
+        const passwordForm = document.getElementById("passwordForm");
 
-        const togglePassword = document.getElementById('togglePassword');
+        const newPasswordInput = document.getElementById("newPassword");
+        const toggleNewPassword = document.getElementById('toggleNewPassword');
 
-        //Show Password
-        togglePassword.addEventListener('click', function () {
-            const type = editPassInput.type === 'password' ? 'text' : 'password';
-            editPassInput.type = type;
-
+        toggleNewPassword.addEventListener('click', function () {
+            const type = newPasswordInput.type === 'password' ? 'text' : 'password';
+            newPasswordInput.type = type;
             this.classList.toggle('fa-eye');
             this.classList.toggle('fa-eye-slash');
         });
-
-        //------------------------------------------------------------------
-        // function getUserId() {
-        //     return sessionStorage.getItem("userId");
-        // }
 
         function loadStudentProfile() {
             fetch(`${apiUrl}/users/${getUserId()}`, {
@@ -108,7 +123,6 @@
 
                     editNameInput.value = data.name;
                     editPhoneInput.value = data.phone;
-                    editPassInput.value = data.password;
                 });
         }
 
@@ -120,20 +134,6 @@
             } else {
                 editNameInput.classList.add("is-invalid");
                 editNameInput.classList.remove("is-valid");
-                return false;
-            }
-        }
-
-        function validatePassword() {
-            const pass = editPassInput.value;
-            const passRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}$/;
-            if (passRegex.test(pass)) {
-                editPassInput.classList.add("is-valid");
-                editPassInput.classList.remove("is-invalid");
-                return true;
-            } else {
-                editPassInput.classList.add("is-invalid");
-                editPassInput.classList.remove("is-valid");
                 return false;
             }
         }
@@ -151,10 +151,31 @@
             }
         }
 
-        form.addEventListener("submit", function (e) {
+        function validateNewPassword() {
+            const pass = newPasswordInput.value;
+            const passRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}$/;
+            if (passRegex.test(pass)) {
+                newPasswordInput.classList.add("is-valid");
+                newPasswordInput.classList.remove("is-invalid");
+                return true;
+            } else {
+                newPasswordInput.classList.add("is-invalid");
+                newPasswordInput.classList.remove("is-valid");
+                return false;
+            }
+        }
+
+        editProfileForm.addEventListener("submit", function (e) {
             e.preventDefault();
-            if (validateUsername() & validateMobile() & validatePassword()) {
+            if (validateUsername() & validateMobile()) {
                 updateStudentProfile();
+            }
+        });
+
+        passwordForm.addEventListener("submit", function (e) {
+            e.preventDefault();
+            if (validateNewPassword()) {
+                updatePassword();
             }
         });
 
@@ -162,8 +183,7 @@
             const student = {
                 name: editNameInput.value.trim(),
                 phone: editPhoneInput.value.trim(),
-                password: editPassInput.value.trim(),
-                usertype: "student"
+                usertype: "USER"
             };
             fetch(`${apiUrl}/users/${getUserId()}`, {
                 method: "PATCH",
@@ -178,10 +198,33 @@
             });
         }
 
+        function updatePassword() {
+            const passwordData = {
+                password: newPasswordInput.value.trim()
+            };
+            fetch(`${apiUrl}/users/${getUserId()}/password`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": getAuthorization()
+                },
+                body: JSON.stringify(passwordData)
+            }).then(response => {
+                if (response.ok) {
+                    alert("Password updated successfully.");
+                    newPasswordInput.value = "";
+                    newPasswordInput.classList.remove("is-valid");
+                    bootstrap.Modal.getInstance(document.getElementById('setPasswordModal')).hide();
+                } else {
+                    alert("Failed to update password.");
+                }
+            });
+        }
+
         function clearValidation() {
             editNameInput.classList.remove("is-invalid");
             editPhoneInput.classList.remove("is-invalid");
-            editPassInput.classList.remove("is-invalid");
+            newPasswordInput.classList.remove("is-invalid");
         }
 
         loadStudentProfile();

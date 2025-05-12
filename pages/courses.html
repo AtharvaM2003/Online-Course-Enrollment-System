@@ -34,7 +34,6 @@
 
         let allCourses = [];
 
-
         function fetchCourses() {
             fetch(`${apiUrl}/courses/available/${getUserId()}`, {
                 method: "GET",
@@ -76,14 +75,14 @@
 
                 const enrollButton = card.querySelector('button');
                 if (!course.isEnrolled) {
-                    enrollButton.addEventListener('click', () => enrollInCourse(course.id, enrollButton));
+                    enrollButton.addEventListener('click', () => enrollInCourse(course.id, course.title, enrollButton));
                 }
 
                 courseList.appendChild(card);
             });
         }
 
-        function enrollInCourse(courseId, button) {
+        function enrollInCourse(courseId, courseTitle, button) {
             const enrollmentData = {
                 userid: getUserId(),
                 courseid: String(courseId),
@@ -105,6 +104,25 @@
                         button.textContent = 'Enrolled';
                         button.disabled = true;
                         alert('Enrollment Successful!');
+
+
+                        const email = {
+                            to: getUserEmail(),
+                            subject: "Course Enrolled Successfully",
+                            text: `You have successfully enrolled in the course: "${courseTitle}".`
+                        };
+                        fetch("http://localhost:8080/api/email/send", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "Authorization": getAuthorization()
+                            },
+                            body: JSON.stringify(email)
+                        }).catch((err) => {
+                            console.error("Error sending email:", err);
+                            alert("Failed to send confirmation email.");
+                        });
+
                     } else {
                         alert('Failed to enroll!');
                     }
