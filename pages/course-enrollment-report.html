@@ -68,7 +68,13 @@
 
         // Fetch course report
         function fetchCourseEnrollmentReport() {
-            fetch(reportUrl)
+            fetch(reportUrl, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": getAuthorization()
+                },
+            })
                 .then(res => res.json())
                 .then(data => {
                     allCourses = data;

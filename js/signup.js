@@ -1,4 +1,4 @@
-const apiUrl = "http://localhost:8080/api/users";
+const apiUrl = "http://localhost:8080/auth/register";
 
 const form = document.getElementById("userForm");
 const userName = document.getElementById("userName");
@@ -116,6 +116,7 @@ function validateType() {
     }
 }
 
+
 // Submit 
 form.addEventListener("submit", function (e) {
     e.preventDefault();
@@ -148,7 +149,9 @@ function addUser() {
 
     fetch(`${apiUrl}`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+            "Content-Type": "application/json"
+        },
         body: JSON.stringify(user),
     })
         .then((response) => {
@@ -158,6 +161,9 @@ function addUser() {
                 errorDiv.textContent = "Email already exists!";
                 errorDiv.classList.remove("d-none");
                 throw new Error("Email conflict");
+            } else if (response.status === 201) {
+                alert("User Registered Successfully!");
+                window.location.href = "../pages/login.html";
             }
 
             if (!response.ok) {
@@ -165,10 +171,6 @@ function addUser() {
             }
 
             return response.json();
-        })
-        .then(() => {
-            alert("User Registered Successfully!");
-            window.location.href = "../pages/login.html";
         })
         .catch((error) => {
             console.error("Error:", error.message);

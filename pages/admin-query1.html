@@ -27,7 +27,13 @@
 
         // Fetch all students and populate dropdown
         function fetchStudents() {
-            fetch(userUrl)
+            fetch(userUrl, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": getAuthorization()
+                },
+            })
                 .then(res => res.json())
                 .then(usersData => {
                     dropdown.innerHTML = '<option value="">Select Student</option>';
@@ -52,7 +58,13 @@
 
             if (!selectedUserId) return;
 
-            fetch(courseUrl + selectedUserId)
+            fetch(courseUrl + selectedUserId, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": getAuthorization()
+                },
+            })
                 .then(res => res.json())
                 .then(courses => {
                     if (courses.length > 0) {

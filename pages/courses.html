@@ -34,12 +34,15 @@
 
         let allCourses = [];
 
-        function getUserId() {
-            return sessionStorage.getItem("userId");
-        }
 
         function fetchCourses() {
-            fetch(`${apiUrl}/courses/available/${getUserId()}`)
+            fetch(`${apiUrl}/courses/available/${getUserId()}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": getAuthorization()
+                },
+            })
                 .then(res => res.json())
                 .then(data => {
                     allCourses = data;
@@ -89,7 +92,10 @@
 
             fetch(`${apiUrl}/enrollments`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    "Authorization": getAuthorization()
+                },
                 body: JSON.stringify(enrollmentData)
             })
                 .then(response => {

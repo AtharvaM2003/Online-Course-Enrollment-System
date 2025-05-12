@@ -149,7 +149,10 @@
             if (editId) {
                 fetch(`${apiUrl}/${editId}`, {
                     method: "PUT",
-                    headers: { "Content-Type": "application/json" },
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": getAuthorization()
+                    },
                     body: JSON.stringify(instructor)
                 }).then(() => {
                     fetchAndRenderInstructors();
@@ -158,7 +161,10 @@
             } else {
                 fetch(apiUrl, {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": getAuthorization()
+                    },
                     body: JSON.stringify(instructor)
                 }).then(() => {
                     fetchAndRenderInstructors();
@@ -169,7 +175,12 @@
 
         function deleteInstructor(id) {
             if (confirm("Are you sure you want to delete this instructor?")) {
-                fetch(`${apiUrl}/${id}`, { method: "DELETE" })
+                fetch(`${apiUrl}/${id}`, {
+                    method: "DELETE", headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": getAuthorization()
+                    }
+                })
                     .then(() => fetchAndRenderInstructors())
                     .catch(error => {
                         console.error("Error deleting instructor:", error);
@@ -179,7 +190,13 @@
         }
 
         function loadInstructorForEdit(id) {
-            fetch(`${apiUrl}/${id}`)
+            fetch(`${apiUrl}/${id}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": getAuthorization()
+                },
+            })
                 .then(res => res.json())
                 .then(data => {
                     nameInput.value = data.name;
@@ -191,7 +208,13 @@
         }
 
         function fetchAndRenderInstructors() {
-            fetch(apiUrl)
+            fetch(apiUrl, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": getAuthorization()
+                },
+            })
                 .then(res => res.json())
                 .then(data => {
                     allInstructors = data;

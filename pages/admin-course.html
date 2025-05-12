@@ -176,7 +176,13 @@
 
         // Load instructors
         function loadInstructors() {
-            fetch(`${apiUrl}/instructors`)
+            fetch(`${apiUrl}/instructors`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": getAuthorization()
+                },
+            })
                 .then(res => res.json())
                 .then(data => {
                     const instSelect = document.getElementById("instructorInput");
@@ -191,7 +197,13 @@
 
         // Fetch courses
         function fetchAndRenderCourses() {
-            fetch(`${apiUrl}/courses`)
+            fetch(`${apiUrl}/courses`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": getAuthorization()
+                },
+            })
                 .then(res => res.json())
                 .then(data => {
                     allCourses = data;
@@ -263,7 +275,10 @@
 
             fetch(`${apiUrl}/courses`, {
                 method: 'POST',
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": getAuthorization()
+                },
                 body: JSON.stringify(newCourse)
             }).then(() => {
                 courseForm.reset();
@@ -284,7 +299,10 @@
 
             fetch(`${apiUrl}/courses/${editId}`, {
                 method: "PUT",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": getAuthorization()
+                },
                 body: JSON.stringify({ ...updatedCourse, id: editId })
             }).then(() => {
                 courseForm.reset();
@@ -299,7 +317,11 @@
         function deleteCourse(id) {
             if (confirm("Are you sure you want to delete this course?")) {
                 fetch(`${apiUrl}/courses/${id}`, {
-                    method: "DELETE"
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": getAuthorization()
+                    }
                 }).then(() => fetchAndRenderCourses());
             }
         }
@@ -312,7 +334,15 @@
         }
 
         function loadCourseForEdit(id) {
-            fetch(`${apiUrl}/courses/${id}`)
+            fetch(`${apiUrl}/courses/${id}`
+                , {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": getAuthorization()
+                    },
+                }
+            )
                 .then(response => response.json())
                 .then(data => {
                     titleInput.value = data.title;

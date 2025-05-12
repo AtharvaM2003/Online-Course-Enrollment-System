@@ -88,12 +88,18 @@
         });
 
         //------------------------------------------------------------------
-        function getUserId() {
-            return sessionStorage.getItem("userId");
-        }
+        // function getUserId() {
+        //     return sessionStorage.getItem("userId");
+        // }
 
         function loadStudentProfile() {
-            fetch(`${apiUrl}/users/${getUserId()}`)
+            fetch(`${apiUrl}/users/${getUserId()}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": getAuthorization()
+                },
+            })
                 .then(res => res.json())
                 .then(data => {
                     studentNamePara.textContent = data.name;
@@ -161,7 +167,10 @@
             };
             fetch(`${apiUrl}/users/${getUserId()}`, {
                 method: "PATCH",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": getAuthorization()
+                },
                 body: JSON.stringify(student)
             }).then(() => {
                 loadStudentProfile();

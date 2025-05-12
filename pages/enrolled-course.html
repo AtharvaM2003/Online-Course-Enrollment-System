@@ -16,13 +16,15 @@
         const apiUrl = "http://localhost:8080/api";
         const allEnrolledCourses = document.getElementById('enrolledCourseList');
 
-        function getUserId() {
-            return sessionStorage.getItem("userId");
-        }
-
         // Fetch enrolled courses using new endpoint --------------------------------------------
         function fetchEnrolledCourses() {
-            fetch(`${apiUrl}/courses/enrolled/${getUserId()}`)
+            fetch(`${apiUrl}/courses/enrolled/${getUserId()}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": getAuthorization()
+                },
+            })
                 .then(res => res.json())
                 .then(courses => {
                     renderEnrolledCourses(courses);

@@ -81,7 +81,13 @@
 
         // Fetch Instructor Data
         function fetchInstructorCourse() {
-            fetch(`${apiUrl}/instructors`)
+            fetch(`${apiUrl}/instructors`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": getAuthorization()
+                },
+            })
                 .then(res => res.json())
                 .then(instructorData => {
                     allInstructors = instructorData;
@@ -117,7 +123,13 @@
             const modalTitle = document.querySelector("#coursesModal .modal-title");
             modalTitle.textContent = `Courses Assigned to ${instructorName}`;
 
-            fetch(`${apiUrl}/instructors/courses/${instructorId}`)
+            fetch(`${apiUrl}/instructors/courses/${instructorId}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": getAuthorization()
+                },
+            })
                 .then(res => res.json())
                 .then(courses => {
                     if (courses.length > 0) {

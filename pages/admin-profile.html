@@ -67,7 +67,13 @@
 
         //----------------------------------------------------------------------
         function loadAdminForEdit() {
-            fetch(`${apiUrl}/users/${getUserId()}`)
+            fetch(`${apiUrl}/users/${getUserId()}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": getAuthorization()
+                },
+            })
                 .then(res => res.json())
                 .then(data => {
                     adminNameInput.value = data.name;
@@ -127,13 +133,6 @@
         }
 
         //---------------------------------------------------------------------------------
-        function getUserId() {
-            return sessionStorage.getItem("userId");
-        }
-
-        function getUserName() {
-            return sessionStorage.getItem("userName");
-        }
 
         //-----------------------------------------------------
 
@@ -151,20 +150,21 @@
         function updateAdmin() {
             const adminName = adminNameInput.value.trim();
 
-            // Set user name in session storage
-            sessionStorage.setItem("userName", adminName);
 
             const admin = {
                 name: adminName,
                 phone: adminPhoneInput.value.trim(),
                 email: adminEmailInput.value,
                 password: adminPassInput.value.trim(),
-                usertype: "admin"
+                usertype: "ADMIN"
             };
 
             fetch(`${apiUrl}/users/${getUserId()}`, {
                 method: "PUT",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": getAuthorization()
+                },
                 body: JSON.stringify(admin)
             }).then(() => {
                 loadAdminForEdit();

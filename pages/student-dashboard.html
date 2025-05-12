@@ -58,7 +58,13 @@
                 const totalInstructorCount = document.getElementById("tinstruct");
 
                 function loadDashboard() {
-                    fetch(apiUrl)
+                    fetch(apiUrl, {
+                        method: "GET",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": getAuthorization()
+                        },
+                    })
                         .then(res => res.json())
                         .then(data => {
                             totalStudentCount.textContent = data.studentCount;

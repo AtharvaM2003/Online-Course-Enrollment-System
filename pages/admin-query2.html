@@ -26,7 +26,13 @@
 
         // Fetch Courses only
         function fetchCourses() {
-            fetch(CoursesUrl)
+            fetch(CoursesUrl, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": getAuthorization()
+                },
+            })
                 .then(res => res.json())
                 .then(coursesData => {
                     allCourses = coursesData;
@@ -55,7 +61,13 @@
             studentList.innerHTML = '';
 
             if (selectedCourseId) {
-                fetch(`${studentsByCourseUrl}${selectedCourseId}`)
+                fetch(`${studentsByCourseUrl}${selectedCourseId}`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": getAuthorization()
+                    },
+                })
                     .then(res => res.json())
                     .then(data => {
                         if (data.length > 0) {

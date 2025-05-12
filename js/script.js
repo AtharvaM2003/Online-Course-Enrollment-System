@@ -8,7 +8,13 @@ function loadPage(page) {
         sessionStorage.setItem('currentPage', page);
     }
 
-    fetch(`pages/${page}`)
+    fetch(`pages/${page}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": getAuthorization()
+        },
+    })
         .then(response => response.text())
         .then(data => {
             const container = document.getElementById('main-content');
@@ -62,7 +68,13 @@ function renderAdminDashboardCharts() {
 function renderPopularCoursesChart() {
     const reportUrl = `http://localhost:8080/api/courses/coursereport`;
 
-    fetch(reportUrl)
+    fetch(reportUrl, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": getAuthorization()
+        },
+    })
         .then(res => res.json())
         .then(data => {
             const courseMap = new Map();
@@ -109,7 +121,13 @@ function renderPopularCoursesChart() {
 }
 
 function renderStudentsPerInstructorChart() {
-    fetch('http://localhost:8080/api/instructors/iwisestudent')
+    fetch('http://localhost:8080/api/instructors/iwisestudent', {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": getAuthorization()
+        },
+    })
         .then(res => res.json())
         .then(data => {
             const labels = data.map(entry => entry.instructorName);
@@ -145,7 +163,13 @@ function renderStudentsPerInstructorChart() {
 function renderStudentDashboardCharts() {
     const reportUrl = `http://localhost:8080/api/courses/findTop5Courses`;
 
-    fetch(reportUrl)
+    fetch(reportUrl, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": getAuthorization()
+        },
+    })
         .then(res => res.json())
         .then(data => {
             const labels = data.map(course => course.courseTitle);
@@ -181,4 +205,79 @@ function renderStudentDashboardCharts() {
         .catch(error => {
             console.error("Error loading top courses chart:", error);
         });
+}
+
+function redirectToLogin() {
+    const currentPath = window.location.pathname;
+    if (!currentPath.includes("login.html")) {
+        window.location.href = "../pages/login.html";
+    }
+}
+
+function decodeJWT(token) {
+    if (!token) return null;
+
+    const parts = token.split('.');
+    if (parts.length !== 3) return null; const payload = parts[1];
+    // Base64URL decode
+    const decodedPayload = atob(payload.replace(/-/g, '+').replace(/_/g, '/'));
+
+    try {
+        return JSON.parse(decodedPayload);
+    } catch (e) {
+        console.error("Invalid JWT payload:", e); return null;
+    }
+}
+
+function getUserId() {
+    const token = localStorage.getItem("token");
+    if (!token)
+        redirectToLogin();
+
+    const decoded = decodeJWT(token);
+    console.log(decoded.userid);
+    return decoded.userid;
+}
+
+
+
+function getUserName() {
+    const token = localStorage.getItem("token");
+    if (!token)
+        redirectToLogin();
+    const decoded = decodeJWT(token);
+    console.log(decoded.sub);
+
+    return decoded.sub;
+}
+
+function getUserEmail() {
+    const token = localStorage.getItem("token");
+    if (!token)
+        redirectToLogin();
+    const decoded = decodeJWT(token);
+    console.log(decoded.email);
+    return decoded.email;
+}
+
+function getUserType() {
+    const token = localStorage.getItem("token");
+    if (!token)
+        redirectToLogin();
+    const decoded = decodeJWT(token);
+    return decoded.usertype;
+}
+
+function getAuthorization() {
+    const token = localStorage.getItem("token");
+    if (!token)
+        redirectToLogin();
+    const decoded = decodeJWT(token);
+    return `Bearer ${token}`;
+}
+
+function logout() {
+    localStorage.removeItem("token");
+    localStorage.clear();
+    redirectToLogin();
 }

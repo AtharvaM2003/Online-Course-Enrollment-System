@@ -144,7 +144,13 @@
 
         // Fetch Students
         function fetchAndRenderStudent() {
-            fetch(`${apiUrl}/users/allstudents`)
+            fetch(`${apiUrl}/users/allstudents`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": getAuthorization()
+                },
+            })
                 .then(res => res.json())
                 .then(users => {
                     allStudents = users;
@@ -191,7 +197,13 @@
 
         // Load Student Data into Form for Edit
         function loadStudentForEdit(id) {
-            fetch(`${apiUrl}/users/${id}`)
+            fetch(`${apiUrl}/users/${id}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": getAuthorization()
+                },
+            })
                 .then(res => res.json())
                 .then(data => {
                     studentNameInput.value = data.name;
@@ -210,7 +222,11 @@
         function deleteStudent(id) {
             if (confirm("Are you want to delete this student ?")) {
                 fetch(`${apiUrl}/users/${id}`, {
-                    method: "DELETE"
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": getAuthorization()
+                    },
                 }).then(() => fetchAndRenderStudent());
             }
         }
@@ -233,7 +249,10 @@
 
                 fetch(url, {
                     method,
-                    headers: { "Content-Type": "application/json" },
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": getAuthorization()
+                    },
                     body: JSON.stringify(student)
                 }).then(() => {
                     clearValidation();

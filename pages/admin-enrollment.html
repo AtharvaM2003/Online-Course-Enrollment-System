@@ -77,7 +77,13 @@
 
         // Fetching enrollments from DTO 
         function fetchEnrollments() {
-            fetch(enrollUrl)
+            fetch(enrollUrl, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": getAuthorization()
+                },
+            })
                 .then(res => res.json())
                 .then(enrollments => {
                     allEnrollments = enrollments;
